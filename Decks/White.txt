@@ -1,0 +1,60 @@
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
+Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
+Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
+Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
+Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
+Chariot 1 w unit 2 0 0 0 0 2 1 nil nil false
+Chariot 1 w unit 2 0 0 0 0 2 1 nil nil false
+Chariot 1 w unit 2 0 0 0 0 2 1 nil nil false
+Chariot 1 w unit 2 0 0 0 0 2 1 nil nil false
+Chariot 1 w unit 2 0 0 0 0 2 1 nil nil false
+Swordsman 1 w unit 4 0 0 0 0 5 4 armour_1 nil true
+Swordsman 1 w unit 4 0 0 0 0 5 4 armour_1 nil true
+Swordsman 1 w unit 4 0 0 0 0 5 4 armour_1 nil true
+Swordsman 1 w unit 4 0 0 0 0 5 4 armour_1 nil true
+Swordsman 1 w unit 4 0 0 0 0 5 4 armour_1 nil true
+Archer 1 w unit 2 0 0 0 0 3 1 range_1 nil true
+Archer 1 w unit 2 0 0 0 0 3 1 range_1 nil true
+Archer 1 w unit 2 0 0 0 0 3 1 range_1 nil true
+Archer 1 w unit 2 0 0 0 0 3 1 range_1 nil true
+Archer 1 w unit 2 0 0 0 0 3 1 range_1 nil true
+Crossbowman 1 w unit 4 0 0 0 0 7 2 range_1 nil true
+Crossbowman 1 w unit 4 0 0 0 0 7 2 range_1 nil true
+Crossbowman 1 w unit 4 0 0 0 0 7 2 range_1 nil true
+Crossbowman 1 w unit 4 0 0 0 0 7 2 range_1 nil true
+Crossbowman 1 w unit 4 0 0 0 0 7 2 range_1 nil true
+Repair 1 w magic 2 0 0 0 0 unit def_2
+Repair 1 w magic 2 0 0 0 0 unit def_2
+Repair 1 w magic 2 0 0 0 0 unit def_2
+Repair 1 w magic 2 0 0 0 0 unit def_2
+Repair 1 w magic 2 0 0 0 0 unit def_2
+Trebuchet 1 w magic 5 0 0 0 0 player ping_1
+Trebuchet 1 w magic 5 0 0 0 0 player ping_1
+Trebuchet 1 w magic 5 0 0 0 0 player ping_1
+Trebuchet 1 w magic 5 0 0 0 0 player ping_1
+Trebuchet 1 w magic 5 0 0 0 0 player ping_1
+Supply 1 w magic 1 0 0 0 0 player draw_2
+Supply 1 w magic 1 0 0 0 0 player draw_2
+Supply 1 w magic 1 0 0 0 0 player draw_2
+Supply 1 w magic 1 0 0 0 0 player draw_2
+Supply 1 w magic 1 0 0 0 0 player draw_2

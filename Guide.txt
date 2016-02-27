@@ -1,0 +1,10 @@
+Well:
+Name numColor Color(s) type(well) Costs Pluses
+Unit:
+Name numColor Color(s) type(unit) Costs atk def power ablility hasMoved
+- powers: 
+- ability: armour, range,
+Magic:
+Name numColor Color(s) type(magic) Costs target effect
+- target: player, unit, well, chant, any
+- effect: draw, atk, def, ping
