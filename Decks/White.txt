@@ -1,23 +1,5 @@
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
-Village 1 w well 2 0 0 0 0 1 0 0 0 0
+Plains 1 w land 0 0 0 0 0 0 1 manaAdd_true_0
+Plains 1 w land 0 0 0 0 0 0 1 manaAdd_true_0
 Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
 Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
 Warrior 1 w unit 1 0 0 0 0 1 1 nil nil true
