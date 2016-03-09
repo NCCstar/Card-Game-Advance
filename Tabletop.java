@@ -25,6 +25,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private String input=null;
    private Card actMagic=null;
    private String chantStr[] = new String[pNum];
+   private boolean landPlayed[] = new boolean[2];
    
    private int[][] mana=new int[2][6];//[player][color] - tap land to add, cast cards to remove
    //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
@@ -90,26 +91,31 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          for(int k=0;k<6;k++)
             mana[p][k]-=cost[k];
       
-         if(temp.getType().equals("land"))
+         if(temp.getType().equals("land")&&!landPlayed[p])
          {
             lands[p].add(temp);
+            landPlayed[p]=true;
+            hand[p].remove(i);
          }
          else
             if(temp.getType().equals("unit"))
             {
                field[p].add(temp);
+               hand[p].remove(i);
             }
             else
                if(temp.getType().equals("chant"))
                {
                   chants[p].add(temp);
+                  hand[p].remove(i);
                }
                else 
                   if(temp.getType().equals("magic"))
                   {
                      //fix target later
+                     hand[p].remove(i);
                   }
-         hand[p].remove(i);
+         
          return true;
       }
       return false;
@@ -205,7 +211,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       draw(1,p);
       JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
       //upkeep
-      
+      landPlayed[p]=false;
       for(int i=0;i<field[p].size();i++)
       {
          field[p].get(i).untap();
