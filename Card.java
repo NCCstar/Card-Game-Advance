@@ -14,55 +14,24 @@ public class Card
    int numColor;
    private String color[];
    private String type;
-   private int wCost;
-   private int bCost;
-   private int yCost;
-   private int rCost;
-   private int dCost;
+   private int[] cost=new int[6];////0=white,1=blue,2=green,3=red,4=black(d),5=colorless
    
-   //wells
-   private int wPlus;
-   private int bPlus;
-   private int yPlus;
-   private int rPlus;
-   private int dPlus;
+   private int strong;
+   private int tough;
+   private String[] ability;
+   private boolean tapped;
    
-   //unit
-   private int atk;
-   private int def;
-   private String ability;
-   private String power;
-   private boolean moved;
-   
-   //magic
-   private String target;//unit or player
-   private String effect;//to be interpreted by Tabletop.java
-
-   //chant
-   //private String target;//same var as magic, would be any, ally, or enemy
-   //private String effect;//see above
    public Card()
    {
       name="Village";
       color=new String[1];
       color[0]="w";
-      type="well";
-      wCost=1;
-      bCost=0;
-      yCost=0;
-      rCost=0;
-      dCost=0;
-      wPlus=1;
-      bPlus=0;
-      yPlus=0;
-      rPlus=0;
-      dPlus=0;
+      type="land";
       rect=new Rect();
    }
-   public Card(String base,int o)//color, type, cost
+   public Card(String base)//color, type, cost
    {
       int i=0;
-      owner=o;
       String[] input = base.split(" ");
       name=input[i++];
       numColor=Integer.parseInt(input[i++]);
@@ -70,35 +39,23 @@ public class Card
       for(int k=0;k<numColor;k++)
          color[k]=input[i++];
       type=input[i++];
-      wCost=Integer.parseInt(input[i++]);
-      bCost=Integer.parseInt(input[i++]);
-      yCost=Integer.parseInt(input[i++]);
-      rCost=Integer.parseInt(input[i++]);
-      dCost=Integer.parseInt(input[i++]);
-      if(type.equals("well"))
+      //mana cost
+      cost[0]=Integer.parseInt(input[i++]);
+      cost[1]=Integer.parseInt(input[i++]);
+      cost[2]=Integer.parseInt(input[i++]);
+      cost[3]=Integer.parseInt(input[i++]);
+      cost[4]=Integer.parseInt(input[i++]);
+      cost[5]=Integer.parseInt(input[i++]);
+      //ability
+      String[] ability=new String[Integer.parseInt(input[i++])];
+      for(int k=0;k<ability.length;k++)
       {
-         wPlus=Integer.parseInt(input[i++]);
-         bPlus=Integer.parseInt(input[i++]);
-         yPlus=Integer.parseInt(input[i++]);
-         rPlus=Integer.parseInt(input[i++]);
-         dPlus=Integer.parseInt(input[i++]);
+         ability[k]=input[i++];
       }
-      if(type.equals("unit"))
-      {
-         atk=Integer.parseInt(input[i++]);
-         def=Integer.parseInt(input[i++]);
-         ability=input[i++];
-         power=input[i++];
-         if(input[i++].equals("true"))
-            moved=true;
-         else
-            moved=false;
-      }
-      if(type.equals("magic")||type.equals("chant"))
-      {
-         target=input[i++];
-         effect=input[i++];
-      }
+      //unit stuff
+      strong=Integer.parseInt(input[i++]);
+      tough=Integer.parseInt(input[i++]);
+      
       rect = new Rect();
    }
    public String getTarget()
