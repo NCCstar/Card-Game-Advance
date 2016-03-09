@@ -1,6 +1,6 @@
 Guide to text
 General:
-Name, numColors, [colors], type, wCost, bCost, gCost, rCost, dCost, nCost, numAbilities, [abilities],ste
+Name, numColors, [colors], type, wCost, bCost, gCost, rCost, dCost, nCost, numAbilities, [abilities], strengh, toughness
 
 Abilities:
 Name_tap?_datafields

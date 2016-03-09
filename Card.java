@@ -59,6 +59,18 @@ public class Card
       
       rect = new Rect();
    }
+   public boolean isTapped()
+   {
+      return tapped;
+   }
+   public void tap()
+   {
+      tapped=true;
+   }
+   public void untap()
+   {
+      tapped=false;
+   }
    public int getStrong()
    {
       return strong;
@@ -94,6 +106,13 @@ public class Card
    public int[] getCost()
    {
       return cost;
+   }
+   public int getSumCost()
+   {
+      int sum=0;
+      for(int i:cost)
+         sum+=i;
+      return sum;
    }
    public String toString()
    {

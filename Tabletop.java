@@ -1,9 +1,9 @@
 /*
-To Do Short: armour | Chant checking and modification
+To Do Short: make work for magic - fighting, 
 
-TO DO Long: 
+TO DO Long: chant, sorcery wark - targets?
 
-Bugs: Chant have no effect
+Bugs:
 */
 import java.io.*;
 import java.util.*;
@@ -26,7 +26,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private Card actMagic=null;
    private String chantStr[] = new String[pNum];
    
-   private int[][] mana=new int[2][6];//[player][color]
+   private int[][] mana=new int[2][6];//[player][color] - tap land to add, cast cards to remove
    //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
    
    //wells - base - hill - field | field - hill - base - wells
@@ -37,7 +37,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private ArrayList<Card>[] field;
    //private ArrayList<Card>[] hill;
    //private ArrayList<Card>[] base;
-   private ArrayList<Card>[] chant;
+   private ArrayList<Card>[] chants;
 
    private Rect pass;   
    private Rect myDeck;
@@ -56,7 +56,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       field=(ArrayList<Card>[])new ArrayList[pNum];
       //hill=(ArrayList<Card>[])new ArrayList[pNum];
       //base=(ArrayList<Card>[])new ArrayList[pNum];
-      chant=(ArrayList<Card>[])new ArrayList[pNum];
+      chants=(ArrayList<Card>[])new ArrayList[pNum];
       
       for(int i=0;i<pNum;i++)
       {
@@ -67,7 +67,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          field[i] = new ArrayList<Card>();
          //hill[i] = new ArrayList<Card>();
          //base[i] = new ArrayList<Card>();
-         chant[i] = new ArrayList<Card>();
+         chants[i] = new ArrayList<Card>();
       }
       
       for(int i=0;i<pNum;i++)
@@ -88,46 +88,33 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       if(cost[0]<=mana[p][0]&&cost[1]<=mana[p][1]&&cost[2]<=mana[p][2]&&cost[3]<=mana[p][3]&&cost[4]<=mana[p][4]&&cost[5]<=mana[p][5])
       {
          for(int k=0;k<6;k++)
-         mana[p][k]-=cost[k];
-
-         if(temp.getType().equals("well"))
+            mana[p][k]-=cost[k];
+      
+         if(temp.getType().equals("land"))
          {
-            wells[p].add(temp);
+            lands[p].add(temp);
          }
          else
             if(temp.getType().equals("unit"))
             {
-               base[p].add(temp);
+               field[p].add(temp);
             }
             else
                if(temp.getType().equals("chant"))
                {
-                  chant[p].add(temp);
+                  chants[p].add(temp);
                }
                else 
                   if(temp.getType().equals("magic"))
                   {
-                     if(!temp.getTarget().equals("player"))
-                     {
-                        input=temp.getTarget();
-                        actMagic=temp;
-                     }
-                     else
-                     {
-                        actMagic=temp;
-                        playMagic(null,null,0);
-                     }
+                     //fix target later
                   }
-                  else
-                     if(temp.getType().equals("chant"))
-                     {
-                        chant[p].add(temp);
-                     }
          hand[p].remove(i);
          return true;
       }
       return false;
    }
+   /*
    private void playMagic(Card aimed,ArrayList<Card> aimedList,int inx)
    {
       String effects[] = actMagic.getEffect().split("_");
@@ -163,37 +150,22 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       input=null;
       actMagic=null;
    }
-   private void check()
-   {
-      wFlow[p]=1;
-      bFlow[p]=0;
-      yFlow[p]=0;
-      rFlow[p]=0;
-      dFlow[p]=0;
-      
-      for(int i=0;i<wells[p].size();i++)
-      {
-         Card temp=wells[p].get(i);
-         wFlow[p]+=temp.getPlus("w");
-         bFlow[p]+=temp.getPlus("b");
-         yFlow[p]+=temp.getPlus("y");
-         rFlow[p]+=temp.getPlus("r");
-         dFlow[p]+=temp.getPlus("d");
-      }
-   }
+   
+   
    private void makeChantString()
    {
       for(int k=0;k<chantStr.length;k++)
       {
          chantStr[k]="";
-         for(int i=0;i<chant[k].size();i++)
+         for(int i=0;i<chants[k].size();i++)
          {
-            chantStr[k]+="_"+chant[k].get(i).getTarget()+"_"+chant[k].get(i).getEffect();
+            chantStr[k]+="_"+chants[k].get(i).getTarget()+"_"+chants[k].get(i).getEffect();
          }
          if(chantStr[k].length()>0)
             chantStr[k]=chantStr[k].substring(1);
       }
    }
+   */
    private void nextTurn()
    {  
       //check passing player's hand size (<=10)
@@ -232,39 +204,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          nP++;
       draw(1,p);
       JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
-      for(int i=0;i<base[p].size();i++)
-      {
-         if(base[p].get(i).getOwner()==p)
-            base[p].get(i).setMoved(false);
-      }
-      for(int i=0;i<hill[p].size();i++)
-      {
-         if(hill[p].get(i).getOwner()==p)
-            hill[p].get(i).setMoved(false);
-      }
+      //upkeep
+      
       for(int i=0;i<field[p].size();i++)
       {
-         if(field[p].get(i).getOwner()==p)
-            field[p].get(i).setMoved(false);
+         field[p].get(i).untap();
       }
-      for(int i=0;i<field[nP].size();i++)
+      for(int i=0;i<lands[p].size();i++)
       {
-         if(field[nP].get(i).getOwner()==p)
-            field[nP].get(i).setMoved(false);
+         lands[p].get(i).untap();
       }
-      for(int i=0;i<hill[nP].size();i++)
-      {
-         if(hill[nP].get(i).getOwner()==p)
-            hill[nP].get(i).setMoved(false);
-      }
-      
-      check();
-      makeChantString();
-      wEnergy[p]+=wFlow[p];
-      bEnergy[p]+=bFlow[p];
-      yEnergy[p]+=yFlow[p];
-      rEnergy[p]+=rFlow[p];
-      dEnergy[p]+=dFlow[p];
+      //makeChantString();
    }
    public void draw(int num,int p)
    {
@@ -327,7 +277,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          allLoop:
          do
          {
-            for(Card card : wells[p])
+            for(Card card : lands[p])
             {
                if(card.getRect().contains(x,y))
                {
@@ -335,7 +285,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   break allLoop;
                }
             }
-            for(Card card : chant[p])
+            for(Card card : chants[p])
             {
                if(card.getRect().contains(x,y))
                {
@@ -346,307 +296,44 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             for(int i=0;i<hand[p].size();i++)
             {
                Card card=hand[p].get(i);
-               if(card.getOwner()==p)
+               if(card.getRect().contains(x,y))
                {
-                  if(card.getRect().contains(x,y))
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to play this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
                   {
-                     int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to play this card?",card.getName(),JOptionPane.YES_NO_OPTION);
-                     if(ans==JOptionPane.YES_OPTION)
-                     {
-                        play(i);
-                        check();
-                        break allLoop;
-                     }
-                  }
-               }
-               else
-               {
-                  if(card.getRect().contains(x,y))
-                  {
-                     JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
+                     play(i);
                      break allLoop;
                   }
-               }
+               }  
             }
             
-            for(int i=0;i<base[p].size();i++)
-            {
-               Card card=base[p].get(i);
-               if(card.getDef()<1)
-               {
-                  dis[card.getOwner()].add(base[p].get(i));
-                  base[p].remove(i);
-                  i--;
-               }
-               else
-                  if(card.getOwner()==p)
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        int ans=JOptionPane.showConfirmDialog(null,card.toString()+"'Yes' to advance, 'no' to retreat, 'cancel' to cancel.",card.getName(),JOptionPane.YES_NO_CANCEL_OPTION);
-                        if(ans==JOptionPane.YES_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                           
-                              if(attack(i,0))
-                              {
-                                 hill[p].add(card); //invade
-                                 base[p].remove(i);
-                              }
-                           }
-                        }
-                        break allLoop;
-                     }
-                  }
-                  else
-                  {
-                  //not possible
-                  }
-            }
-         
-            for(int i=0;i<hill[p].size();i++)
-            {
-               Card card=hill[p].get(i);
-               if(card.getDef()<1)
-               {
-                  dis[card.getOwner()].add(hill[p].get(i));
-                  hill[p].remove(i);
-                  i--;
-               }
-               else
-                  if(card.getOwner()==p)
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        int ans=JOptionPane.showConfirmDialog(null,card.toString()+"'Yes' to advance, 'no' to retreat, 'cancel' to cancel.",card.getName(),JOptionPane.YES_NO_CANCEL_OPTION);
-                        if(ans==JOptionPane.YES_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                           
-                              if(attack(i,1))
-                              {
-                                 field[p].add(card); //invade
-                                 hill[p].remove(i);
-                              }
-                           }
-                        }
-                        if(ans==JOptionPane.NO_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              base[p].add(card);
-                              hill[p].remove(i);
-                           }
-                        }
-                        break allLoop;
-                     }
-                  }
-                  else
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                        break allLoop;
-                     }
-                  }
-            }
-         
             for(int i=0;i<field[p].size();i++)
             {
-               Card card=field[p].get(i);
-               if(card.getDef()<1)
+               Card card=field[p].get(i);  
+               if(card.getRect().contains(x,y))
                {
-                  dis[card.getOwner()].add(field[p].get(i));
-                  field[p].remove(i);
-                  i--;
+                  break allLoop;
                }
-               else
-                  if(card.getOwner()==p)
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        int ans=JOptionPane.showConfirmDialog(null,card.toString()+"'Yes' to advance, 'no' to retreat, 'cancel' to cancel.",card.getName(),JOptionPane.YES_NO_CANCEL_OPTION);
-                        if(ans==JOptionPane.YES_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                           
-                              if(attack(i,2))
-                              {
-                                 field[nP].add(card); //invade
-                                 field[p].remove(i);
-                              }
-                           }
-                        }
-                        if(ans==JOptionPane.NO_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              hill[p].add(card);
-                              field[p].remove(i);
-                           }
-                        }
-                        break allLoop;
-                     }
-                  }
-                  else
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                        break allLoop;
-                     }
-                  }
             }
-            for(Card card : wells[nP])
+            for(Card card : lands[nP])
             {
                if(card.getRect().contains(x,y))
                {
                   JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
                }
             }
-            for(int i=0;i<hand[nP].size();i++)
-            {
-               Card card=hand[nP].get(i);
-               if(card.getOwner()==p)
-               {
-               //not possible
-               }
-               else
-               {
-               //not logical
-               }
-            }
-            
-            for(int i=0;i<base[nP].size();i++)
-            {
-               Card card=base[nP].get(i);
-               if(card.getDef()<1)
-               {
-                  dis[card.getOwner()].add(base[nP].get(i));
-                  base[nP].remove(i);
-                  i--;
-               }
-               else
-                  if(card.getOwner()==p)
-                  {
-                  //not possible
-                  }
-                  else
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                        break allLoop;
-                     }
-                  }
-            }
-         
-            for(int i=0;i<hill[nP].size();i++)
-            {
-               Card card=hill[nP].get(i);
-               if(card.getDef()<1)
-               {
-                  dis[card.getOwner()].add(hill[nP].get(i));
-                  hill[nP].remove(i);
-                  i--;
-               }
-               else
-                  if(card.getOwner()==p)
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        int ans=JOptionPane.showConfirmDialog(null,card.toString()+"'Yes' to advance, 'no' to retreat, 'cancel' to cancel.",card.getName(),JOptionPane.YES_NO_CANCEL_OPTION);
-                        if(ans==JOptionPane.YES_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              if(attack(i,4))
-                              {
-                              //not wanted
-                              }
-                           }
-                        }
-                        if(ans==JOptionPane.NO_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              field[nP].add(card);
-                              hill[nP].remove(i);
-                           }
-                        }
-                        break allLoop;
-                     }
-                  }
-                  else
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                        break allLoop;
-                     }
-                  }
-            }
-         
+            //enemy hand - does nothing            
             for(int i=0;i<field[nP].size();i++)
             {
                Card card=field[nP].get(i);
-               if(card.getDef()<1)
+               if(card.getRect().contains(x,y))
                {
-                  dis[card.getOwner()].add(field[nP].get(i));
-                  field[nP].remove(i);
-                  i--;
+                  break allLoop;
                }
-               else
-                  if(card.getOwner()==p)
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        int ans=JOptionPane.showConfirmDialog(null,card.toString()+"'Yes' to advance, 'no' to retreat, 'cancel' to cancel.",card.getName(),JOptionPane.YES_NO_CANCEL_OPTION);
-                        if(ans==JOptionPane.YES_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              if(attack(i,3))
-                              {
-                                 hill[nP].add(card); //invade
-                                 field[nP].remove(i);
-                              }
-                           }
-                        }
-                        if(ans==JOptionPane.NO_OPTION)
-                        {
-                           if(!card.getMoved())
-                           {
-                              card.setMoved(true);
-                              field[p].add(card);
-                              field[nP].remove(i);
-                           }
-                        }
-                        break allLoop;
-                     }
-                  }
-                  else
-                  {
-                     if(card.getRect().contains(x,y))
-                     {
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                        break allLoop;
-                     }
-                  }
             }
          }while(false);
       }
+      /* //-target
       else
       {
          int lClick=MouseEvent.BUTTON1;
@@ -789,16 +476,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          
          }while(false);
       }
+      */
       repaint();
-   }
-   private boolean hasEnemy(ArrayList<Card> x)
-   {
-      for(int i=0;i<x.size();i++)
-      {
-         if(x.get(i).getOwner()!=p)
-            return true;
-      }
-      return false;
    }
    private boolean attack(int index,int which)
    {
@@ -807,122 +486,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          nP=1;
       ArrayList<Card> atking;
       ArrayList<Card> defing;
-      switch(which)//figure out where
-      {
-         case 0:
-            atking=base[p];
-            defing=hill[p];
-            break;
-         case 1:
-            atking=hill[p];
-            defing=field[p];
-            break;
-         case 2:
-            atking=field[p];
-            defing=field[nP];
-            break;
-         case 3:
-            atking=field[nP];
-            defing=hill[nP];
-            break;
-         case 4:
-            atking=hill[nP];
-            defing=base[nP];
-            break;
-         default:
-            return false;
-      }
-      if(!hasEnemy(defing))//if not battle, move
-      {
-         if(defing==base[nP])
-         {
-            life[nP]-=atking.get(index).getAtk();
-            return false;
-         }
-         return true;
-      }
-      else
-      {
-         ArrayList<Card> defers=new ArrayList<Card>();
-         JOptionPane.showMessageDialog(null,"Player "+(nP+1)+" take control.");
-         String options="";
-         for(int i=0;i<defing.size();i++)
-         {
-            options+=i+1+".) "+defing.get(i).toString();
-         }
-         int def=Integer.parseInt(JOptionPane.showInputDialog(null,"Choose blocker.\n"+options,"Defenders",JOptionPane.PLAIN_MESSAGE))-1;
-         defers.add(defing.get(def));
-         //fight
-         Card atacker = atking.get(index);
-         int atks[] = {atacker.getAtk(),defers.get(0).getAtk()};
-         if(chantStr[p].contains("atk")||chantStr[nP].contains("armour"))
-         {
-            String[] tempMod=chantStr[p].split("_");
-            for(int i=0;i<tempMod.length;i++)
-            {
-               if(tempMod[i].equals("any")||tempMod[i].equals("ally"))
-                  if(tempMod[i+1].equals("atk"))
-                     atks[p]+=Integer.parseInt(tempMod[i+2]);
-            }
-            chantStr[nP].split("_");
-            for(int i=0;i<tempMod.length;i++)
-            {
-               if(tempMod[i].equals("any")||tempMod[i].equals("enemy"))
-                  if(tempMod[i+1].equals("armour"))
-                     atks[p]+=Integer.parseInt(tempMod[i+2]);
-            }
-         }
-         if(atacker.getAbility().contains("armour"))
-         {
-            String[] abi = atacker.getAbility().split("_");
-            atks[1]-=Integer.parseInt(abi[1]);
-         }
-         if(atacker.getAbility().contains("range"))
-         {
-            atks[1]=0;
-         }
-         
-         if(atks[1]>0)
-            atacker.plusDef(-1*atks[1]);
-            
-         if(chantStr[nP].contains("atk")||chantStr[p].contains("armour"))
-         {
-            String[] tempMod=chantStr[nP].split("_");
-            for(int i=0;i<tempMod.length;i++)
-            {
-               if(tempMod[i].equals("any")||tempMod[i].equals("ally"))
-                  if(tempMod[i+1].equals("atk"))
-                     atks[nP]+=Integer.parseInt(tempMod[i+2]);
-            }
-            chantStr[p].split("_");
-            for(int i=0;i<tempMod.length;i++)
-            {
-               if(tempMod[i].equals("any")||tempMod[i].equals("enemy"))
-                  if(tempMod[i+1].equals("armour"))
-                     atks[nP]+=Integer.parseInt(tempMod[i+2]);
-            }
-         }
-         if(defers.get(0).getAbility().contains("armour"))
-         {
-            String[] abi = defers.get(0).getAbility().split("_");
-            atks[0]-=Integer.parseInt(abi[1]);
-         }
-         if(atks[0]>0)
-            defers.get(0).plusDef(-1*atks[0]);
-         if(atking.get(index).getDef()<1)
-         {
-            dis[p].add(atking.get(index));
-            atking.remove(index);
-         }
-         if(defing.get(0).getDef()<1)
-         {
-            dis[nP].add(defers.get(0));
-            defers.remove(0);
-            defing.remove(def);
-         }
-         //end fight
-         return false;
-      }
+      
+      //right fight code
+      
+      return false;
+      
    }
    public void mouseDragged( MouseEvent e){}
    public void mouseExited( MouseEvent e ){}
@@ -941,7 +509,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          myDis=new Rect(getWidth()-60,halfY+90,getWidth()-10,halfY+140);
          g.setColor(Color.gray);
          g.fillRect(0, 0, getWidth(), getHeight());
-         g.setColor(Color.green);
+         g.setColor(Color.yellow);
          g.drawLine(0, halfY,getWidth(),halfY);
          double ref=0;
          g.setFont(new Font("Ariel",Font.PLAIN,20));
@@ -975,7 +543,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));//l,halfY+30,r,halfY+60
             ref+=1.5;
             Rect temp = field[p].get(i).getRect();
-            if(!field[p].get(i).getMoved())
+            if(field[p].get(i).isTapped())
             {
                g.setColor(Color.green);
                g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
@@ -983,58 +551,18 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setColor(g,field[p].get(i));
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
             g = setTextColor(g);
-            g.drawString(field[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
+            g.drawString("",temp.getLeft()+10,temp.getBottom()-5);
          }
          g.setColor(Color.LIGHT_GRAY);
          g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
          ref=0;
          dis+=2;
-         for(int i=0;i<hill[p].size();i++) //draw hill
+         for(int i=0;i<lands[p].size();i++) //draw wells
          {
-            hill[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));//l,halfY+90
+            lands[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
             ref+=1.5;
-            Rect temp = hill[p].get(i).getRect();
-            if(!hill[p].get(i).getMoved())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-            g = setColor(g,hill[p].get(i));
-            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-            g = setTextColor(g);
-            g.drawString(hill[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-         }
-         g.setColor(Color.DARK_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         for(int i=0;i<base[p].size();i++) //draw base
-         {
-            base[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
-            ref+=1.5;
-            Rect temp = base[p].get(i).getRect();
-            if(!base[p].get(i).getMoved())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-            g = setColor(g,base[p].get(i));
-            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-            g = setTextColor(g);
-            g.drawString(base[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-         }
-         g.setColor(Color.black);
-         g.drawString("|"+(p+1)+"|"+life[p]+"|",(int)(DIM),halfY+DIM*6);
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         for(int i=0;i<wells[p].size();i++) //draw wells
-         {
-            wells[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
-            ref+=1.5;
-            Rect temp = wells[p].get(i).getRect();
-            g = setColor(g,wells[p].get(i));
+            Rect temp = lands[p].get(i).getRect();
+            g = setColor(g,lands[p].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
       
@@ -1049,7 +577,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
             ref+=1.5;
             Rect temp = field[nP].get(i).getRect();
-            if(!field[nP].get(i).getMoved())
+            if(field[nP].get(i).isTapped())
             {
                g.setColor(Color.green);
                g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
@@ -1057,58 +585,18 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setColor(g,field[nP].get(i));
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
             g = setTextColor(g);
-            g.drawString(field[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
+            g.drawString("",temp.getLeft()+10,temp.getBottom()-5);
          }
          g.setColor(Color.LIGHT_GRAY);
          g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
          dis+=2;
          ref=0;
-         for(int i=0;i<hill[nP].size();i++)
+         for(int i=0;i<lands[nP].size();i++)
          {
-            hill[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
+            lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
             ref+=1.5;
-            Rect temp = hill[nP].get(i).getRect();
-            if(!hill[nP].get(i).getMoved())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-            g = setColor(g,hill[nP].get(i));
-            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-            g = setTextColor(g);
-            g.drawString(hill[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-         }
-         g.setColor(Color.DARK_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         for(int i=0;i<base[nP].size();i++)
-         {
-            base[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-            ref+=1.5;
-            Rect temp = base[nP].get(i).getRect();
-            if(!base[nP].get(i).getMoved())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-            g = setColor(g,base[nP].get(i));
-            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-            g = setTextColor(g);
-            g.drawString(base[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-         }
-         g.setColor(Color.black);
-         g.drawString("|"+(nP+1)+"|"+life[nP]+"|",(int)(DIM),halfY-DIM*5);
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         for(int i=0;i<wells[nP].size();i++)
-         {
-            wells[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-            ref+=1.5;
-            Rect temp = wells[nP].get(i).getRect();
-            g = setColor(g,wells[nP].get(i));
+            Rect temp = lands[nP].get(i).getRect();
+            g = setColor(g,lands[nP].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
          ref=0;
@@ -1121,24 +609,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
          ref=1;
-         for(int i=0;i<chant[p].size();i++)
+         for(int i=0;i<chants[p].size();i++)
          {
-            chant[p].get(i).setRect(getWidth()-DIM*5,(int)(halfY+DIM*(ref)),getWidth()-DIM*4,(int)(halfY+DIM*(ref+1)));
+            chants[p].get(i).setRect(getWidth()-DIM*5,(int)(halfY+DIM*(ref)),getWidth()-DIM*4,(int)(halfY+DIM*(ref+1)));
             ref+=1.5;
-            Rect temp = chant[p].get(i).getRect();
-            g = setColor(g,chant[p].get(i));
+            Rect temp = chants[p].get(i).getRect();
+            g = setColor(g,chants[p].get(i));
             g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
          g.setColor(Color.LIGHT_GRAY);
          g.drawLine((int)(getWidth()-DIM*5.5),halfY+DIM,(int)(getWidth()-DIM*5.5),halfY+DIM*(dis+1));
          g.drawLine((int)(getWidth()-DIM*3.5),halfY+DIM,(int)(getWidth()-DIM*3.5),halfY+DIM*(dis+1));
          ref=1;
-         for(int i=0;i<chant[nP].size();i++)
+         for(int i=0;i<chants[nP].size();i++)
          {
-            chant[nP].get(i).setRect(getWidth()-DIM*5,(int)(halfY-DIM*(ref)),getWidth()-DIM*4,(int)(halfY-DIM*(ref+1)));
+            chants[nP].get(i).setRect(getWidth()-DIM*5,(int)(halfY-DIM*(ref)),getWidth()-DIM*4,(int)(halfY-DIM*(ref+1)));
             ref+=1.5;
-            Rect temp = chant[nP].get(i).getRect();
-            g = setColor(g,chant[nP].get(i));
+            Rect temp = chants[nP].get(i).getRect();
+            g = setColor(g,chants[nP].get(i));
             g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
          g.setColor(Color.LIGHT_GRAY);
@@ -1147,24 +635,27 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          
          g.setFont(new Font("Arial",Font.PLAIN,15));
          g.setColor(Color.white);
-         g.drawString(wEnergy[p]+" | "+wFlow[p],DIM,halfY+25);
+         g.drawString(mana[p][0]+"",DIM,halfY+25);
          g.setColor(Color.blue);
-         g.drawString(bEnergy[p]+" | "+bFlow[p],DIM,halfY+45);
-         g.setColor(Color.yellow);
-         g.drawString(yEnergy[p]+" | "+yFlow[p],DIM,halfY+65);
-         g.setColor(Color.red);
-         g.drawString(rEnergy[p]+" | "+rFlow[p],DIM,halfY+85);
-         g.setColor(Color.black);
-         g.drawString(dEnergy[p]+" | "+dFlow[p],DIM,halfY+105);
-      
+         g.drawString(mana[p][1]+"",DIM,halfY+45);
          g.setColor(Color.green);
-         g.drawString(p+1+" | "+pNum,DIM,halfY+125);
+         g.drawString(mana[p][2]+"",DIM,halfY+65);
+         g.setColor(Color.red);
+         g.drawString(mana[p][3]+"",DIM,halfY+85);
+         g.setColor(Color.black);
+         g.drawString(mana[p][4]+"",DIM,halfY+105);
+         g.setColor(Color.lightGray);
+         g.drawString(mana[p][5]+"",DIM,halfY+125);
+      
+         g.setColor(Color.yellow);
+         g.drawString(p+1+" | "+pNum,DIM,halfY+145);
          g.fillRect(pass.getLeft(),pass.getTop(),pass.getWidth(),pass.getHeight());
          g.setColor(Color.red.darker());
          g.fillRect(myDeck.getLeft(),myDeck.getTop(),myDeck.getWidth(),myDeck.getHeight());
          g.setColor(Color.white.darker());
          g.fillRect(myDis.getLeft(),myDis.getTop(),myDis.getWidth(),myDis.getHeight());
       }
+      /*
       else
       {
          if(input.contains("all"))
@@ -1329,6 +820,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.drawLine((int)(getWidth()-DIM*5.5),halfY-DIM,(int)(getWidth()-DIM*5.5),halfY-DIM*(dis+1));
          g.drawLine((int)(getWidth()-DIM*3.5),halfY-DIM,(int)(getWidth()-DIM*3.5),halfY-DIM*(dis+1));
       }
+      */
    }
    private Graphics setColor(Graphics g,Card card)
    {
