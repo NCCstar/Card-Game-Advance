@@ -97,47 +97,21 @@ public class Card
    }
    public String toString()
    {
-      String ans=name+"\n | ";
+      String ans="";
       
-      if(wCost>0)
-         ans+="White Energy Cost: "+wCost+" | ";
-      if(bCost>0)
-         ans+="Blue Energy Cost: "+bCost+" | ";
-      if(yCost>0)
-         ans+="Yellow Energy Cost: "+yCost+" | ";
-      if(rCost>0)
-         ans+="Red Energy Cost: "+rCost+" | ";
-      if(dCost>0)
-         ans+="Dark Energy Cost: "+dCost+" | ";
-      ans+="\n";
-      //well
-      if(type.equals("well"))
-      {
-         ans+=" | ";
-         if(wPlus>0)
-            ans+="White Energy Plus: "+wPlus+" | ";
-         if(bPlus>0)
-            ans+="Blue Energy Plus: "+bPlus+" | ";
-         if(yPlus>0)
-            ans+="Yellow Energy Plus: "+yPlus+" | ";
-         if(rPlus>0)
-            ans+="Red Energy Plus: "+rPlus+" | ";
-         if(dPlus>0)
-            ans+="Dark Energy Plus: "+dPlus+" | ";
-         ans+="\n";    
-      }
-      if(type.equals("unit"))
-      {
-         ans+=" | Atk: "+atk+" | Def: "+def+" |\n | Power: "+power+" | Ability: "+ability+" |\n | ";
-         if(moved)
-            ans+="Has moved. |\n";
-         else
-            ans+="Has not moved. |\n";
-      }
-      if(type.equals("magic"))
-      {
-         ans+=effect+"\n";
-      }
+      if(cost[0]>0)
+         ans+="White cost:"+cost[0];
+      if(cost[1]>0)
+         ans+="Blue cost:"+cost[0];
+      if(cost[2]>0)
+         ans+="Green cost:"+cost[0];
+      if(cost[3]>0)
+         ans+="Red cost:"+cost[0];
+      if(cost[4]>0)
+         ans+="Black cost:"+cost[0];
+      if(cost[5]>0)
+         ans+="Colorless cost:"+cost[0];
+         
       return ans;
    }
    public String[] getColor()

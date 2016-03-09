@@ -26,8 +26,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private Card actMagic=null;
    private String chantStr[] = new String[pNum];
    
-   private int[][] mana=new int[2][5];//[player][color]
-   //0=white,1=blue,2=green,3=red,4=black(d)
+   private int[][] mana=new int[2][6];//[player][color]
+   //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
    
    //wells - base - hill - field | field - hill - base - wells
    private ArrayList<Card>[] lands;
@@ -75,7 +75,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          Scanner input = new Scanner(new FileReader("Decks/"+decks[i]));
          while(input.hasNextLine())
          {
-            deck[i].add(new Card(input.nextLine(),i));
+            deck[i].add(new Card(input.nextLine()));
          }
       }
       draw(7,0);
@@ -84,13 +84,12 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private boolean play(int i)
    {
       Card temp=hand[p].get(i);
-      if(temp.getCost("w")<=mana[p][0]&&temp.getCost("b")<=bEnergy[p]&&temp.getCost("y")<=yEnergy[p]&&temp.getCost("r")<=rEnergy[p]&&temp.getCost("d")<=dEnergy[p])
+      int[] cost=temp.getCost();
+      if(cost[0]<=mana[p][0]&&cost[1]<=mana[p][1]&&cost[2]<=mana[p][2]&&cost[3]<=mana[p][3]&&cost[4]<=mana[p][4]&&cost[5]<=mana[p][5])
       {
-         wEnergy[p]-=temp.getCost("w");
-         bEnergy[p]-=temp.getCost("b");
-         yEnergy[p]-=temp.getCost("y");
-         rEnergy[p]-=temp.getCost("r");
-         dEnergy[p]-=temp.getCost("d");
+         for(int k=0;k<6;k++)
+         mana[p][k]-=cost[k];
+
          if(temp.getType().equals("well"))
          {
             wells[p].add(temp);
