@@ -18,6 +18,7 @@ public class Card
    
    private int strong;
    private int tough;
+   private int[] counters=new int[2];//(atk,def)
    private String[] ability;
    private boolean tapped;
    
@@ -58,45 +59,17 @@ public class Card
       
       rect = new Rect();
    }
-   public String getTarget()
+   public int getStrong()
    {
-      return target;
+      return strong;
    }
-   public String getEffect()
+   public int[] getCounters()
    {
-      return effect;
+      return counters;
    }
-   public int getAtk()
+   public int getTough()
    {
-      return atk;
-   }
-   public void plusAtk(int a)
-   {
-      atk+=a;
-   }
-   public int getDef()
-   {
-      return def;
-   }
-   public void plusDef(int d)
-   {
-      def+=d;
-   }
-   public int getOwner()
-   {
-      return owner;
-   }
-   public void setOwner(int o)
-   {
-      owner=o;
-   }
-   public boolean getMoved()
-   {
-      return moved;
-   }
-   public void setMoved(boolean m)
-   {
-      moved=m;
+      return tough;
    }
    public void setRect(int l, int t, int r,int b)
    {
@@ -114,48 +87,13 @@ public class Card
    {
       return name;
    }
-   public String getAbility()
+   public String[] getAbility()
    {
       return ability;
    }
-   public String getPower()
+   public int[] getCost()
    {
-      return power;
-   }
-   public int getSumCost()
-   {
-      return wCost+bCost+yCost+rCost+dCost;
-   }
-   public int getCost(String color)
-   {
-      if(color.equals("w"))
-         return wCost;
-      if(color.equals("b"))
-         return bCost;
-      if(color.equals("y"))
-         return yCost;
-      if(color.equals("r"))
-         return rCost;
-      if(color.equals("d"))
-         return dCost;
-      return 0;
-   }
-   public int getPlus(String color)
-   {
-      if(type.equals("well"))
-      {
-         if(color.equals("w"))
-            return wPlus;
-         if(color.equals("b"))
-            return bPlus;
-         if(color.equals("y"))
-            return yPlus;
-         if(color.equals("r"))
-            return rPlus;
-         if(color.equals("d"))
-            return dPlus;
-      }
-      return 0;
+      return cost;
    }
    public String toString()
    {
