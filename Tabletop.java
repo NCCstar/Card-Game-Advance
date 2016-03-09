@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Tabletop extends JPanel implements MouseListener, MouseMotionListener
 {
+   private u u = new u();
    private int p=0;
    private int pNum=2;
    private int[] life={20,20};
@@ -26,47 +27,53 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private Card actMagic=null;
    private String chantStr[] = new String[pNum];
    
-   private int[][] mana=new int[2][5];//[player][color]
-   //0=white,1=blue,2=green,3=red,4=black(d)
+   private int[] wEnergy={1,0};
+   private int[] bEnergy={0,0};
+   private int[] yEnergy={0,0};
+   private int[] rEnergy={0,0};
+   private int[] dEnergy={0,0};
    
+   private int[] wFlow={1,1};
+   private int[] bFlow={0,0};
+   private int[] yFlow={0,0};
+   private int[] rFlow={0,0};
+   private int[] dFlow={0,0};
    //wells - base - hill - field | field - hill - base - wells
-   private ArrayList<Card>[] lands;
+   private ArrayList<Card>[] wells;
    private ArrayList<Card>[] hand;
    private ArrayList<Card>[] deck;
    private ArrayList<Card>[] dis;
    private ArrayList<Card>[] field;
-   //private ArrayList<Card>[] hill;
-   //private ArrayList<Card>[] base;
+   private ArrayList<Card>[] hill;
+   private ArrayList<Card>[] base;
    private ArrayList<Card>[] chant;
 
    private Rect pass;   
    private Rect myDeck;
    private Rect myDis;
-   private Rect otherDeck;
-   private Rect otherDis;
    public Tabletop(String[] decks)throws IOException
    {
       addMouseListener( this );
       addMouseMotionListener( this );
    
-      lands=(ArrayList<Card>[])new ArrayList[pNum];
+      wells=(ArrayList<Card>[])new ArrayList[pNum];
       hand=(ArrayList<Card>[])new ArrayList[pNum];
       deck=(ArrayList<Card>[])new ArrayList[pNum];
       dis=(ArrayList<Card>[])new ArrayList[pNum];
       field=(ArrayList<Card>[])new ArrayList[pNum];
-      //hill=(ArrayList<Card>[])new ArrayList[pNum];
-      //base=(ArrayList<Card>[])new ArrayList[pNum];
+      hill=(ArrayList<Card>[])new ArrayList[pNum];
+      base=(ArrayList<Card>[])new ArrayList[pNum];
       chant=(ArrayList<Card>[])new ArrayList[pNum];
       
       for(int i=0;i<pNum;i++)
       {
-         lands[i] = new ArrayList<Card>();
+         wells[i] = new ArrayList<Card>();
          hand[i] = new ArrayList<Card>();
          deck[i] = new ArrayList<Card>();
          dis[i] = new ArrayList<Card>();
          field[i] = new ArrayList<Card>();
-         //hill[i] = new ArrayList<Card>();
-         //base[i] = new ArrayList<Card>();
+         hill[i] = new ArrayList<Card>();
+         base[i] = new ArrayList<Card>();
          chant[i] = new ArrayList<Card>();
       }
       
@@ -84,7 +91,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private boolean play(int i)
    {
       Card temp=hand[p].get(i);
-      if(temp.getCost("w")<=mana[p][0]&&temp.getCost("b")<=bEnergy[p]&&temp.getCost("y")<=yEnergy[p]&&temp.getCost("r")<=rEnergy[p]&&temp.getCost("d")<=dEnergy[p])
+      if(temp.getCost("w")<=wEnergy[p]&&temp.getCost("b")<=bEnergy[p]&&temp.getCost("y")<=yEnergy[p]&&temp.getCost("r")<=rEnergy[p]&&temp.getCost("d")<=dEnergy[p])
       {
          wEnergy[p]-=temp.getCost("w");
          bEnergy[p]-=temp.getCost("b");
