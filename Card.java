@@ -48,7 +48,7 @@ public class Card
       cost[4]=Integer.parseInt(input[i++]);
       cost[5]=Integer.parseInt(input[i++]);
       //ability
-      String[] ability=new String[Integer.parseInt(input[i++])];
+      ability=new String[Integer.parseInt(input[i++])];
       for(int k=0;k<ability.length;k++)
       {
          ability[k]=input[i++];
@@ -116,21 +116,28 @@ public class Card
    }
    public String toString()
    {
-      String ans="";
+      String ans=" | ";
       
       if(cost[0]>0)
-         ans+="White cost:"+cost[0];
+         ans+="White cost:"+cost[0]+" | ";
       if(cost[1]>0)
-         ans+="Blue cost:"+cost[0];
+         ans+="Blue cost:"+cost[0]+" | ";
       if(cost[2]>0)
-         ans+="Green cost:"+cost[0];
+         ans+="Green cost:"+cost[0]+" | ";
       if(cost[3]>0)
-         ans+="Red cost:"+cost[0];
+         ans+="Red cost:"+cost[0]+" | ";
       if(cost[4]>0)
-         ans+="Black cost:"+cost[0];
+         ans+="Black cost:"+cost[0]+" | ";
       if(cost[5]>0)
-         ans+="Colorless cost:"+cost[0];
-         
+         ans+="Colorless cost:"+cost[0]+" | ";
+      ans+="\n";
+      if(ability!=null)
+         for(int i=0;i<ability.length;i++)
+         {
+            ans+=(i+1)+": "+ability[i]+"\n";
+         }
+      
+      ans+=tapped+"\n";
       return ans;
    }
    public String[] getColor()

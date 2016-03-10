@@ -1,7 +1,9 @@
 /*
 To Do Short: make work for magic - fighting, 
 
-TO DO Long: chant, sorcery wark - targets?
+TO DO Long: chant, sorcery work - targets?
+
+TO DO list: onEnter, onLeave
 
 Bugs:
 */
@@ -287,7 +289,18 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             {
                if(card.getRect().contains(x,y))
                {
-                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
+                  String[] options = card.getAbility();
+                  int input=Integer.parseInt((String)JOptionPane.showOptionDialog(null,card.toString(),card.getName(),JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.INFORMATION_MESSAGE,null,options,null))-1;
+                  if(!card.isTapped())
+                     if(input<card.getAbility().length)
+                     {
+                        String[] abi=card.getAbility()[input].split("_");
+                        if(abi[0].equals("manaAdd"))
+                        {
+                           mana[p][Integer.parseInt(abi[2])]+=Integer.parseInt(abi[3]);
+                           card.tap();
+                        }
+                     }
                   break allLoop;
                }
             }
@@ -318,6 +331,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=field[p].get(i);  
                if(card.getRect().contains(x,y))
                {
+                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
                   break allLoop;
                }
             }

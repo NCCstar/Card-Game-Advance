@@ -1,9 +1,7 @@
 Guide to text
 General:
-Name, numColors, [colors], type, wCost, bCost, gCost, rCost, dCost, nCost, numAbilities, [abilities], strengh, toughness
+Name, numColors, [colors], type, wCost, bCost, gCost, rCost, dCost, nCost, numAbilities, [abilities], strength, toughness
 
 Abilities:
 Name_tap?_datafields
 manaAdd_true_-color-
-
-
