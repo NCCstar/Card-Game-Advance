@@ -289,18 +289,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             {
                if(card.getRect().contains(x,y))
                {
-                  String[] options = card.getAbility();
-                  int input=Integer.parseInt((String)JOptionPane.showOptionDialog(null,card.toString(),card.getName(),JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.INFORMATION_MESSAGE,null,options,null))-1;
-                  if(!card.isTapped())
-                     if(input<card.getAbility().length)
+                  Object[] options = card.getAbility();
+                  Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
+                  if(!card.isTapped()&&exe!=null)
+                  {
+                     String[] abi=((String)exe).split("_");
+                     if(abi[0].equals("manaAdd"))
                      {
-                        String[] abi=card.getAbility()[input].split("_");
-                        if(abi[0].equals("manaAdd"))
-                        {
-                           mana[p][Integer.parseInt(abi[2])]+=Integer.parseInt(abi[3]);
-                           card.tap();
-                        }
+                        mana[p][Integer.parseInt(abi[2])]+=Integer.parseInt(abi[3]);
+                        card.tap();
                      }
+                  }
                   break allLoop;
                }
             }
@@ -539,7 +538,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             ref+=1.5;
             Rect temp = hand[p].get(i).getRect();
             g = setColor(g,hand[p].get(i));
-            if(hand[p].get(i).getType().equals("well"))
+            if(hand[p].get(i).getType().equals("land"))
             {
                g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
             }
@@ -560,14 +559,15 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.setFont(new Font("Ariel",Font.PLAIN,25));
          for(int i=0;i<field[p].size();i++) //draw field
          {
-            field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));//l,halfY+30,r,halfY+60
-            ref+=1.5;
-            Rect temp = field[p].get(i).getRect();
+            int xDim=DIM;
+            int yDim=DIM;
             if(field[p].get(i).isTapped())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
+               xDim+=DIM/15;
+            else
+               yDim+=DIM/15;
+            field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+            ref+=2;
+            Rect temp = field[p].get(i).getRect();
             g = setColor(g,field[p].get(i));
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
             g = setTextColor(g);
@@ -579,8 +579,14 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          dis+=2;
          for(int i=0;i<lands[p].size();i++) //draw wells
          {
-            lands[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
-            ref+=1.5;
+            int xDim=DIM;
+            int yDim=DIM;
+            if(lands[p].get(i).isTapped())
+               xDim+=DIM/15;
+            else
+               yDim+=DIM/15;
+            lands[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+            ref+=2;
             Rect temp = lands[p].get(i).getRect();
             g = setColor(g,lands[p].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
@@ -594,14 +600,15 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          ref=0;
          for(int i=0;i<field[nP].size();i++)
          {
-            field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-            ref+=1.5;
-            Rect temp = field[nP].get(i).getRect();
+            int xDim=DIM;
+            int yDim=DIM;
             if(field[nP].get(i).isTapped())
-            {
-               g.setColor(Color.green);
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
+               xDim+=DIM/15;
+            else
+               yDim+=DIM/15;
+            field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+            ref+=2;
+            Rect temp = field[nP].get(i).getRect();
             g = setColor(g,field[nP].get(i));
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
             g = setTextColor(g);
@@ -614,7 +621,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          for(int i=0;i<lands[nP].size();i++)
          {
             lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-            ref+=1.5;
+            ref+=2;
             Rect temp = lands[nP].get(i).getRect();
             g = setColor(g,lands[nP].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
