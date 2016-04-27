@@ -24,7 +24,7 @@ public class Card
    
    public Card()
    {
-      name="Village";
+      name="Plains";
       color=new String[1];
       color[0]="w";
       type="land";
@@ -134,10 +134,35 @@ public class Card
       if(ability!=null)
          for(int i=0;i<ability.length;i++)
          {
-            ans+=(i+1)+": "+ability[i]+"\n";
+            String[] exp=ability[i].split("_");
+            if(exp[0].equals("manaAdd"))
+            {
+               ans=(i+1)+": ";
+               if(exp[1].equals("true"))
+                  ans+="Tap and add ";
+               else
+                  ans+="Add ";
+               ans+=exp[3];
+               switch(Integer.parseInt(exp[2]))
+               {
+                  case 0:
+                     ans+=" white mana.\n";
+                     break;
+                  default:
+                     ans+=" colorless mana.\n";
+                     break;
+               }
+            }
          }
-      
-      ans+=tapped+"\n";
+      if(type.equals("unit"))
+      {
+         ans+="Toughness: "+tough+"|Strength: "+strong+"\n";
+         ans+="Counters: "+
+      }
+      if(tapped)
+         ans+="Tapped\n";
+      else
+         ans+="Untapped\n";
       return ans;
    }
    public String[] getColor()

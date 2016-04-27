@@ -4,4 +4,4 @@ Name, numColors, [colors], type, wCost, bCost, gCost, rCost, dCost, nCost, numAb
 
 Abilities:
 Name_tap?_datafields
-manaAdd_true_-color-
+manaAdd_true_[colorToAdd]_[amountToAdd]
