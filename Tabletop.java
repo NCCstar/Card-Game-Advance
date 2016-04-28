@@ -21,6 +21,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
 {
    private int p=0;
    private int pNum=2;
+   private int mode=0;//0=first main,1=attack,2=defend,3=second main
    private int[] life={20,20};
    private String[] names;
    private final int DIM=30;//dimensions of items
@@ -42,9 +43,9 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    //private ArrayList<Card>[] base;
    private ArrayList<Card>[] chants;
 
-   private Rect pass;   
-   private Rect myDeck;
-   private Rect myDis;
+   private Rect pass; //next phase
+   private Rect myDeck;//deck
+   private Rect myDis;//discard
    private Rect otherDeck;
    private Rect otherDis;
    public Tabletop(String[] decks)throws IOException
@@ -188,6 +189,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          dis[p].add(hand[p].get(rid));
          hand[p].remove(rid);
       }
+      for(int i=0;i<field[p].size();i++)
+      {
+         field[p].get(i).heal();
+      }
       //who's dead
       int nP=0;
       if(p==0)
@@ -253,7 +258,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          ans="There are no cards here.";
       JOptionPane.showMessageDialog(null,ans,name,JOptionPane.INFORMATION_MESSAGE);
    }
-   public void mouseClicked( MouseEvent e )
+   //master IO program - whenever mouse is clicked will check if on a card
+   public void mouseClicked(MouseEvent e)
    {
       int nP=0;
       if(p==0)
@@ -330,7 +336,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=field[p].get(i);  
                if(card.getRect().contains(x,y))
                {
-                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
+                  if(mode==1)
+                  {
+                     
+                  }
+                  if(mode==2)
+                  {
+                     
+                  }
+                  Object[] options = card.getAbility();
+                  if(options!=null)
+                  {
+                     Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
+                  
+                  }
+                  else
+                  {
+                     JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
+                  }
                   break allLoop;
                }
             }

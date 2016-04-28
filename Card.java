@@ -18,6 +18,7 @@ public class Card
    
    private int strong;
    private int tough;
+   private int maxHP;
    private int[] counters=new int[2];//(atk,def)
    private String[] ability;
    private boolean tapped;
@@ -70,6 +71,10 @@ public class Card
    public void untap()
    {
       tapped=false;
+   }
+   public void heal()
+   {
+      tough=maxHP+counters[1];
    }
    public int getStrong()
    {
@@ -157,7 +162,7 @@ public class Card
       if(type.equals("unit"))
       {
          ans+="Toughness: "+tough+"|Strength: "+strong+"\n";
-         ans+="Counters: "+
+         ans+="Counters: "+counters[0]+"/"+counters[1]+"\n";
       }
       if(tapped)
          ans+="Tapped\n";
