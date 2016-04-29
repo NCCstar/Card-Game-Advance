@@ -46,8 +46,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private Rect pass; //next phase
    private Rect myDeck;//deck
    private Rect myDis;//discard
-   private Rect otherDeck;
-   private Rect otherDis;
+   private Rect yoDeck;
+   private Rect yoDis;
    public Tabletop(String[] decks)throws IOException
    {
       addMouseListener( this );
@@ -122,6 +122,20 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          return true;
       }
       return false;
+   }
+   private void doAbility(String exe,Card card)
+   {
+      String[] abi=exe.split("_");
+      if(abi[0].equals("manaAdd"))
+      {
+         mana[p][Integer.parseInt(abi[2])]+=Integer.parseInt(abi[3]);
+         card.tap();
+      }
+      if(abi[0].equals("lifeAdd"))
+      {
+         life[p]+=Integer.parseInt(abi[2]);
+         card.tap();
+      }
    }
    /*
    private void playMagic(Card aimed,ArrayList<Card> aimedList,int inx)
@@ -299,12 +313,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
                   if(!card.isTapped()&&exe!=null)
                   {
-                     String[] abi=((String)exe).split("_");
-                     if(abi[0].equals("manaAdd"))
-                     {
-                        mana[p][Integer.parseInt(abi[2])]+=Integer.parseInt(abi[3]);
-                        card.tap();
-                     }
+                     doAbility((String)exe,card);
                   }
                   break allLoop;
                }
@@ -348,7 +357,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   if(options!=null)
                   {
                      Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
-                  
+                     if(!card.isTapped()&&exe!=null)
+                     {
+                        doAbility((String)exe,card);
+                     }
                   }
                   else
                   {
@@ -362,6 +374,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                if(card.getRect().contains(x,y))
                {
                   JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
+                  break allLoop;
                }
             }
             //enemy hand - does nothing            
@@ -370,6 +383,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=field[nP].get(i);
                if(card.getRect().contains(x,y))
                {
+                  //JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
                   break allLoop;
                }
             }
@@ -549,6 +563,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          pass=new Rect(getWidth()-40,halfY-20,getWidth(),halfY+20);
          myDeck=new Rect(getWidth()-60,halfY+30,getWidth()-10,halfY+80);
          myDis=new Rect(getWidth()-60,halfY+90,getWidth()-10,halfY+140);
+         yoDeck=new Rect(getWidth()-60,halfY-30,getWidth()-10,halfY-80);
+         yoDis=new Rect(getWidth()-60,halfY-90,getWidth()-10,halfY-140);
          g.setColor(Color.gray);
          g.fillRect(0, 0, getWidth(), getHeight());
          g.setColor(Color.yellow);
@@ -582,13 +598,13 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.setFont(new Font("Ariel",Font.PLAIN,25));
          for(int i=0;i<field[p].size();i++) //draw field
          {
-            int xDim=DIM;
-            int yDim=DIM;
+            int xDim=0;
+            int yDim=0;
             if(field[p].get(i).isTapped())
-               xDim+=DIM/15;
+               xDim+=DIM/3;
             else
-               yDim+=DIM/15;
-            field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+               yDim+=DIM/3;
+            field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5))+xDim,halfY+DIM*(dis+1)+yDim);
             ref+=2;
             Rect temp = field[p].get(i).getRect();
             g = setColor(g,field[p].get(i));
@@ -602,13 +618,13 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          dis+=2;
          for(int i=0;i<lands[p].size();i++) //draw wells
          {
-            int xDim=DIM;
-            int yDim=DIM;
+            int xDim=0;
+            int yDim=0;
             if(lands[p].get(i).isTapped())
-               xDim+=DIM/15;
+               xDim+=DIM/3;
             else
-               yDim+=DIM/15;
-            lands[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+               yDim+=DIM/3;
+            lands[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5))+xDim,halfY+DIM*(dis+1)+yDim);
             ref+=2;
             Rect temp = lands[p].get(i).getRect();
             g = setColor(g,lands[p].get(i));
@@ -619,17 +635,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          nP=0;
          if(p==0)
             nP=1;//nP is not-player number
-         dis=1;
-         ref=0;
+         dis=1;//y ref
+         ref=0;//x ref
          for(int i=0;i<field[nP].size();i++)
          {
-            int xDim=DIM;
-            int yDim=DIM;
+            int xDim=0;
+            int yDim=0;
             if(field[nP].get(i).isTapped())
-               xDim+=DIM/15;
+               xDim+=DIM/3;
             else
-               yDim+=DIM/15;
-            field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(xDim*(ref+5)),halfY+yDim*(dis+1));
+               yDim+=DIM/3;
+            field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1)-yDim,(int)(DIM*(ref+5))+xDim,halfY-DIM*dis);
             ref+=2;
             Rect temp = field[nP].get(i).getRect();
             g = setColor(g,field[nP].get(i));
@@ -643,7 +659,13 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          ref=0;
          for(int i=0;i<lands[nP].size();i++)
          {
-            lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
+            int xDim=0;
+            int yDim=0;
+            if(lands[nP].get(i).isTapped())
+               xDim+=DIM/3;
+            else
+               yDim+=DIM/3;
+            lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*dis,(int)(DIM*(ref+5))+xDim,halfY-DIM*(dis+1)-yDim);
             ref+=2;
             Rect temp = lands[nP].get(i).getRect();
             g = setColor(g,lands[nP].get(i));
@@ -700,177 +722,23 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.setColor(Color.yellow);
          g.drawString(p+1+" | "+pNum,DIM,halfY+145);
          g.fillRect(pass.getLeft(),pass.getTop(),pass.getWidth(),pass.getHeight());
+         
          g.setColor(Color.red.darker());
          g.fillRect(myDeck.getLeft(),myDeck.getTop(),myDeck.getWidth(),myDeck.getHeight());
          g.setColor(Color.white.darker());
          g.fillRect(myDis.getLeft(),myDis.getTop(),myDis.getWidth(),myDis.getHeight());
+         g.setColor(Color.yellow);
+         g.setFont(new Font("Dialog",Font.PLAIN,30));
+         g.drawString(life[p]+"",myDis.getLeft(),myDis.getTop()+myDis.getHeight()+DIM);
+         
+         g.setColor(Color.red.darker());
+         g.fillRect(yoDeck.getLeft(),yoDeck.getTop(),yoDeck.getWidth(),yoDeck.getHeight());
+         g.setColor(Color.white.darker());
+         g.fillRect(yoDis.getLeft(),yoDis.getTop(),yoDis.getWidth(),yoDis.getHeight());
+         g.setColor(Color.yellow);
+         g.setFont(new Font("Dialog",Font.PLAIN,30));
+         g.drawString(life[nP]+"",yoDis.getLeft(),yoDis.getTop()+yoDis.getHeight()-DIM/5);
       }
-      /*
-      else
-      {
-         if(input.contains("all"))
-            playMagic(null,null,0);
-         int halfY=getHeight()/2;
-         g.setColor(Color.gray);
-         g.fillRect(0, 0, getWidth(), getHeight());
-         g.setColor(Color.green);
-         g.drawLine(0, halfY,getWidth(),halfY);
-         double ref=0;
-         int dis=1;
-         g.setFont(new Font("Ariel",Font.PLAIN,25));
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<field[p].size();i++)
-            {
-               field[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));//l,halfY+30,r,halfY+60
-               ref+=1.5;
-               Rect temp = field[p].get(i).getRect();
-               g = setColor(g,field[p].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(field[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         ref=0;
-         dis+=2;
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<hill[p].size();i++)
-            {
-               hill[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));//l,halfY+90
-               ref+=1.5;
-               Rect temp = hill[p].get(i).getRect();
-               g = setColor(g,hill[p].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(hill[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.DARK_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<base[p].size();i++)
-            {
-               base[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
-               ref+=1.5;
-               Rect temp = base[p].get(i).getRect();
-               g = setColor(g,base[p].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(base[p].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         if(input.equals("any")||input.equals("well"))
-            for(int i=0;i<wells[p].size();i++)
-            {
-               wells[p].get(i).setRect((int)(DIM*(ref+4)),halfY+DIM*dis,(int)(DIM*(ref+5)),halfY+DIM*(dis+1));
-               ref+=1.5;
-               Rect temp = wells[p].get(i).getRect();
-               g = setColor(g,wells[p].get(i));
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-      
-         int nP=0;
-         nP=0;
-         if(p==0)
-            nP=1;
-         dis=1;
-         ref=0;
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<field[nP].size();i++)
-            {
-               field[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-               ref+=1.5;
-               Rect temp = field[nP].get(i).getRect();
-               g = setColor(g,field[nP].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(field[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<hill[nP].size();i++)
-            {
-               hill[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-               ref+=1.5;
-               Rect temp = hill[nP].get(i).getRect();
-               g = setColor(g,hill[nP].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(hill[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.DARK_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         if(input.equals("any")||input.equals("unit"))
-            for(int i=0;i<base[nP].size();i++)
-            {
-               base[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-               ref+=1.5;
-               Rect temp = base[nP].get(i).getRect();
-               g = setColor(g,base[nP].get(i));
-               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               g = setTextColor(g);
-               g.drawString(base[nP].get(i).getOwner()+1+"",temp.getLeft()+10,temp.getBottom()-5);
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
-         if(input.equals("any")||input.equals("well"))
-            for(int i=0;i<wells[nP].size();i++)
-            {
-               wells[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1),(int)(DIM*(ref+5)),halfY-DIM*dis);
-               ref+=1.5;
-               Rect temp = wells[nP].get(i).getRect();
-               g = setColor(g,wells[nP].get(i));
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-         ref=0;
-         if(input.equals("any")||input.equals("hand"))
-            for(int i=0;i<hand[nP].size();i++)
-            {
-               hand[nP].get(i).setRect((int)(DIM*(ref+1)),DIM,(int)(DIM*(ref+2)),DIM*2);
-               ref+=1.5;
-               Rect temp = hand[nP].get(i).getRect();
-               g.setColor(new Color(u.ranI(0,255),u.ranI(0,255),u.ranI(0,255)));
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-         ref=1;
-         if(input.equals("any")||input.equals("chant"))
-            for(int i=0;i<chant[p].size();i++)
-            {
-               chant[p].get(i).setRect(getWidth()-DIM*5,(int)(halfY+DIM*(ref)),getWidth()-DIM*4,(int)(halfY+DIM*(ref+1)));
-               ref+=1.5;
-               Rect temp = chant[p].get(i).getRect();
-               g = setColor(g,chant[p].get(i));
-               g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine((int)(getWidth()-DIM*5.5),halfY+DIM,(int)(getWidth()-DIM*5.5),halfY+DIM*(dis+1));
-         g.drawLine((int)(getWidth()-DIM*3.5),halfY+DIM,(int)(getWidth()-DIM*3.5),halfY+DIM*(dis+1));
-         ref=1;
-         if(input.equals("any")||input.equals("chant"))
-            for(int i=0;i<chant[nP].size();i++)
-            {
-               chant[nP].get(i).setRect(getWidth()-DIM*5,(int)(halfY-DIM*(ref)),getWidth()-DIM*4,(int)(halfY-DIM*(ref+1)));
-               ref+=1.5;
-               Rect temp = chant[nP].get(i).getRect();
-               g = setColor(g,chant[nP].get(i));
-               g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine((int)(getWidth()-DIM*5.5),halfY-DIM,(int)(getWidth()-DIM*5.5),halfY-DIM*(dis+1));
-         g.drawLine((int)(getWidth()-DIM*3.5),halfY-DIM,(int)(getWidth()-DIM*3.5),halfY-DIM*(dis+1));
-      }
-      */
    }
    private Graphics setColor(Graphics g,Card card)
    {

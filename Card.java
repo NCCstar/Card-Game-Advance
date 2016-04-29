@@ -142,7 +142,7 @@ public class Card
             String[] exp=ability[i].split("_");
             if(exp[0].equals("manaAdd"))
             {
-               ans=(i+1)+": ";
+               ans=": ";
                if(exp[1].equals("true"))
                   ans+="Tap and add ";
                else
@@ -153,15 +153,37 @@ public class Card
                   case 0:
                      ans+=" white mana.\n";
                      break;
+                  case 1:
+                     ans+=" blue mana.\n";
+                     break;
+                  case 2:
+                     ans+=" green mana.\n";
+                     break;
+                  case 3:
+                     ans+=" red mana.\n";
+                     break;
+                  case 4:
+                     ans+=" black mana.\n";
+                     break;
                   default:
                      ans+=" colorless mana.\n";
                      break;
                }
             }
+            if(exp[0].equals("lifeAdd"))
+            {
+               ans=(i+1)+": ";
+               if(exp[1].equals("true"))
+                  ans+="Tap and gain ";
+               else
+                  ans+="Gain ";
+               ans+=exp[2];
+               ans+=" life.\n";
+            }
          }
       if(type.equals("unit"))
       {
-         ans+="Toughness: "+tough+"|Strength: "+strong+"\n";
+         ans+="Toughness: "+tough+" | Strength: "+strong+"\n";
          ans+="Counters: "+counters[0]+"/"+counters[1]+"\n";
       }
       if(tapped)
