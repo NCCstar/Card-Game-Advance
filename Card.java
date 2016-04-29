@@ -124,17 +124,17 @@ public class Card
       String ans=" | ";
       
       if(cost[0]>0)
-         ans+="White cost:"+cost[0]+" | ";
+         ans+="White cost: "+cost[0]+" | ";
       if(cost[1]>0)
-         ans+="Blue cost:"+cost[0]+" | ";
+         ans+="Blue cost: "+cost[0]+" | ";
       if(cost[2]>0)
-         ans+="Green cost:"+cost[0]+" | ";
+         ans+="Green cost: "+cost[0]+" | ";
       if(cost[3]>0)
-         ans+="Red cost:"+cost[0]+" | ";
+         ans+="Red cost: "+cost[0]+" | ";
       if(cost[4]>0)
-         ans+="Black cost:"+cost[0]+" | ";
+         ans+="Black cost: "+cost[0]+" | ";
       if(cost[5]>0)
-         ans+="Colorless cost:"+cost[0]+" | ";
+         ans+="Colorless cost: "+cost[0]+" | ";
       ans+="\n";
       if(ability!=null)
          for(int i=0;i<ability.length;i++)

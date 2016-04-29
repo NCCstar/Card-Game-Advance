@@ -1,9 +1,9 @@
 /*
-To Do Short: make work for magic - fighting, 
+To Do Short: Fighting 
 
-TO DO Long: chant, sorcery work - targets?
+TO DO Long: 
 
-TO DO list: onEnter, onLeave
+TO DO list: 
 
 Bugs:
 */
@@ -89,11 +89,67 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    {
       Card temp=hand[p].get(i);
       int[] cost=temp.getCost();
-      if(cost[0]<=mana[p][0]&&cost[1]<=mana[p][1]&&cost[2]<=mana[p][2]&&cost[3]<=mana[p][3]&&cost[4]<=mana[p][4]&&cost[5]<=mana[p][5])
+      boolean canPlay=true;
+      for(int k=0;k<5;k++)
       {
-         for(int k=0;k<6;k++)
+         if(cost[k]>mana[p][k])
+         {
+            canPlay=false;
+            break;
+         }
+      }
+      if(cost[5]>0)
+      {
+         int manaSum=0;
+         for(int k=0;k<5;k++)
+         {
+            manaSum+=mana[p][k];
+         }
+         if(manaSum<temp.getSumCost())
+            canPlay=false;
+      }
+      if(canPlay)
+      {
+         for(int k=0;k<5;k++)
             mana[p][k]-=cost[k];
-      
+         for(int k=0;k<cost[5];k++)
+         {
+            ArrayList<Object> preop=new ArrayList();
+            //Object[] options = {"White","Blue","Green","Red","Black"};
+            if(mana[p][0]>0)
+               preop.add("White");
+            if(mana[p][1]>0)
+               preop.add("Blue");
+            if(mana[p][2]>0)
+               preop.add("Green");
+            if(mana[p][3]>0)
+               preop.add("Red");
+            if(mana[p][4]>0)
+               preop.add("Black");
+            
+            Object[] options=preop.toArray();
+            String exe=(String)JOptionPane.showInputDialog(null,"What color mana to use for colorless?","Mana Color",JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
+         
+            switch(exe)
+            {
+               case "White":
+                  mana[p][0]--;
+                  break;
+               case "Blue":
+                  mana[p][0]--;
+                  break;
+               case "Green":
+                  mana[p][0]--;
+                  break;
+               case "Red":
+                  mana[p][0]--;
+                  break;
+               case "Black":
+                  mana[p][0]--;
+                  break;
+            }
+         }
+         
          if(temp.getType().equals("land")&&!landPlayed[p])
          {
             lands[p].add(temp);
@@ -191,6 +247,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    */
    private void nextTurn()
    {  
+      for(int k=0;k<6;k++)
+      {
+         mana[p][k]=0;
+      }
       //check passing player's hand size (<=10)
       while(hand[p].size()>10)
       {
@@ -354,7 +414,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                      
                   }
                   Object[] options = card.getAbility();
-                  if(options!=null)
+                  if(options.length>0)
                   {
                      Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
                      if(!card.isTapped()&&exe!=null)
@@ -665,7 +725,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                xDim+=DIM/3;
             else
                yDim+=DIM/3;
-            lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*dis,(int)(DIM*(ref+5))+xDim,halfY-DIM*(dis+1)-yDim);
+            lands[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM*(dis+1)-yDim,(int)(DIM*(ref+5))+xDim,halfY-DIM*dis);
             ref+=2;
             Rect temp = lands[nP].get(i).getRect();
             g = setColor(g,lands[nP].get(i));
