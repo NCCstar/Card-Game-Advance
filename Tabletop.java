@@ -40,8 +40,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private ArrayList<Card>[] field;
    private ArrayList<Card>[] chants;
    
-   private ArrayList<Card> atkers;
-   private ArrayList<Card> defers;
+   private ArrayList<Card> atkers=new ArrayList();
+   private ArrayList<Card> defers=new ArrayList();
 
    private Rect pass; //next phase
    private Rect myDeck;//deck
@@ -108,6 +108,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          if(manaSum<temp.getSumCost())
             canPlay=false;
       }
+      if(temp.getType().equals("land")&&landPlayed[p])
+      {
+         canPlay=false;
+      }
       if(canPlay)
       {
          for(int k=0;k<5;k++)
@@ -154,7 +158,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             }
          }
          
-         if(temp.getType().equals("land")&&!landPlayed[p])
+         if(temp.getType().equals("land"))
          {
             lands[p].add(temp);
             landPlayed[p]=true;
@@ -258,12 +262,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       //check passing player's hand size (<=10)
       while(hand[p].size()>10)
       {
-         String out="";
-         for(int i=0;i<hand[p].size();i++)
+         Object[] options = (Object[])hand;
+         Object exe=JOptionPane.showInputDialog(null,"Your hand is too large.\nChoose a card to discard:","Discard Card",JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
+         int rid=-1;
+         for(int i=0;i<hand.length;i++)
          {
-            out+=i+1+".)"+hand[p].get(i).toString();
+            if(exe==hand[i])
+            {
+               rid=i;
+               break;
+            }
          }
-         int rid=Integer.parseInt(JOptionPane.showInputDialog(null,"Choose a card to discard.\n"+out,"Discard Card",JOptionPane.PLAIN_MESSAGE))-1;
          dis[p].add(hand[p].get(rid));
          hand[p].remove(rid);
       }
@@ -301,6 +310,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       for(int i=0;i<field[p].size();i++)
       {
          field[p].get(i).untap();
+         field[p].get(i).unSick();
       }
       for(int i=0;i<lands[p].size();i++)
       {
@@ -319,6 +329,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             Card temp = deck[p].get(ran);
             deck[p].remove(ran);
             hand[p].add(temp);
+            if(!temp.getType().equals("unit"))
+               temp.unSick();
          }
       }
       else
@@ -756,7 +768,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             hand[nP].get(i).setRect((int)(DIM*(ref+1)),DIM,(int)(DIM*(ref+2)),DIM*2);
             ref+=1.5;
             Rect temp = hand[nP].get(i).getRect();
-            g.setColor(new Color(u.ranI(0,255),u.ranI(0,255),u.ranI(0,255)));
+            //g.setColor(new Color(u.ranI(0,255),u.ranI(0,255),u.ranI(0,255)));
+            g.setColor(Color.red.darker());
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
          ref=1;
@@ -840,20 +853,29 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    }
    private Graphics setColor(Graphics g,Card card)
    {
-      if(card.getColor()[0].equals("w"))
-         g.setColor(Color.white);
-      else
-         if(card.getColor()[0].equals("b"))
+      switch(card.getColor()[0])
+      {
+         case "w":
+            g.setColor(Color.white);
+            break;
+         case "b":
             g.setColor(Color.blue);
-         else
-            if(card.getColor()[0].equals("y"))
-               g.setColor(Color.yellow);
-            else
-               if(card.getColor()[0].equals("r"))
-                  g.setColor(Color.red);
-               else
-                  if(card.getColor()[0].equals("d"))
-                     g.setColor(Color.black);
+            break;
+         case "g":
+            g.setColor(Color.yellow);
+            break;
+         case "r":
+            g.setColor(Color.red);
+            break;
+         case "d":
+            g.setColor(Color.black);
+            break;
+      }  
+      if(card.isSick())
+      {
+         Color c=g.getColor();
+         g.setColor(new Color(c.getRed(),c.getGreen(),c.getBlue(),220)); 
+      }     
       return g;
    }
    private Graphics setTextColor(Graphics x)

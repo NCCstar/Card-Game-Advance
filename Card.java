@@ -21,7 +21,9 @@ public class Card
    private int maxHP;
    private int[] counters=new int[2];//(atk,def)
    private String[] ability;
+   private String[] attribute;
    private boolean tapped;
+   private boolean sumSick;
    
    public Card()
    {
@@ -48,6 +50,12 @@ public class Card
       cost[3]=Integer.parseInt(input[i++]);
       cost[4]=Integer.parseInt(input[i++]);
       cost[5]=Integer.parseInt(input[i++]);
+      //attribute
+      attribute=new String[Integer.parseInt(input[i++])];
+      for(int k=0;k<attribute.length;k++)
+      {
+         attribute[k]=input[i++];
+      }
       //ability
       ability=new String[Integer.parseInt(input[i++])];
       for(int k=0;k<ability.length;k++)
@@ -58,6 +66,7 @@ public class Card
       strong=Integer.parseInt(input[i++]);
       tough=Integer.parseInt(input[i++]);
       
+      sumSick=true;
       rect = new Rect();
    }
    public boolean isTapped()
@@ -71,6 +80,14 @@ public class Card
    public void untap()
    {
       tapped=false;
+   }
+   public void unSick()
+   {
+      sumSick=false;
+   }
+   public boolean isSick()
+   {
+      return sumSick;
    }
    public void heal()
    {
