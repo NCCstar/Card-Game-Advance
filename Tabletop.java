@@ -33,15 +33,15 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private int[][] mana=new int[2][6];//[player][color] - tap land to add, cast cards to remove
    //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
    
-   //wells - base - hill - field | field - hill - base - wells
    private ArrayList<Card>[] lands;
    private ArrayList<Card>[] hand;
    private ArrayList<Card>[] deck;
    private ArrayList<Card>[] dis;
    private ArrayList<Card>[] field;
-   //private ArrayList<Card>[] hill;
-   //private ArrayList<Card>[] base;
    private ArrayList<Card>[] chants;
+   
+   private ArrayList<Card> atkers;
+   private ArrayList<Card> defers;
 
    private Rect pass; //next phase
    private Rect myDeck;//deck
@@ -115,7 +115,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          for(int k=0;k<cost[5];k++)
          {
             ArrayList<Object> preop=new ArrayList();
-            //Object[] options = {"White","Blue","Green","Red","Black"};
+         
             if(mana[p][0]>0)
                preop.add("White");
             if(mana[p][1]>0)
@@ -128,8 +128,12 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                preop.add("Black");
             
             Object[] options=preop.toArray();
-            String exe=(String)JOptionPane.showInputDialog(null,"What color mana to use for colorless?","Mana Color",JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
-         
+            String exe;
+            if(options.length>1)
+               exe=(String)JOptionPane.showInputDialog(null,"What color mana to use for colorless?","Mana Color",JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
+            else
+               exe=(String)options[0];
+               
             switch(exe)
             {
                case "White":
@@ -282,6 +286,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          System.exit(0);
       }
       //switch player and draw 1
+      JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
       if(p==pNum-1)
          p=0;
       else
@@ -290,7 +295,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       if(p==0)
          nP++;
       draw(1,p);
-      JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
+      mode=0;
       //upkeep
       landPlayed[p]=false;
       for(int i=0;i<field[p].size();i++)
@@ -344,7 +349,9 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       {
          if(pass.contains(x,y))
          {
-            nextTurn();
+            mode++;
+            if(mode==4)
+               nextTurn();
          }
          if(myDeck.contains(x,y))
          {
@@ -391,12 +398,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=hand[p].get(i);
                if(card.getRect().contains(x,y))
                {
-                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to play this card?",card.getName(),JOptionPane.YES_NO_OPTION);
-                  if(ans==JOptionPane.YES_OPTION)
+                  if(mode==0||mode==3)
                   {
-                     play(i);
-                     break allLoop;
+                     int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to play this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                     if(ans==JOptionPane.YES_OPTION)
+                     {
+                        play(i);
+                        break allLoop;
+                     }
                   }
+                  else
+                     JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
                }  
             }
             
@@ -405,17 +417,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=field[p].get(i);  
                if(card.getRect().contains(x,y))
                {
+                  ArrayList<Object> preop = new ArrayList();
+                  Object[] temp=card.getAbility();
+                  for(Object o:temp)
+                  {
+                     preop.add(o);
+                  }
+                  
                   if(mode==1)
                   {
-                     
+                     preop.add("Attack");
                   }
                   if(mode==2)
                   {
-                     
+                     preop.add("Defend");
                   }
-                  Object[] options = card.getAbility();
-                  if(options.length>0)
+                  if(preop.size()>0)
                   {
+                     Object[] options = preop.toArray();
                      Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
                      if(!card.isTapped()&&exe!=null)
                      {
@@ -443,7 +462,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=field[nP].get(i);
                if(card.getRect().contains(x,y))
                {
-                  //JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
+                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
                   break allLoop;
                }
             }
@@ -798,6 +817,25 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.setColor(Color.yellow);
          g.setFont(new Font("Dialog",Font.PLAIN,30));
          g.drawString(life[nP]+"",yoDis.getLeft(),yoDis.getTop()+yoDis.getHeight()-DIM/5);
+         
+         String modeStr="ERROR";
+         switch(mode)
+         {
+            case 0:
+            case 3:
+               modeStr="Main";
+               break;
+            case 1:
+               modeStr="Attack";
+               break;
+            case 2:
+               modeStr="Defend";
+               break;
+            default:
+               break;
+         }
+         g.setFont(new Font("Dialog",Font.PLAIN,20));
+         g.drawString(modeStr,getWidth()-70,getHeight()-10);
       }
    }
    private Graphics setColor(Graphics g,Card card)

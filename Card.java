@@ -172,7 +172,7 @@ public class Card
             }
             if(exp[0].equals("lifeAdd"))
             {
-               ans=(i+1)+": ";
+               ans=": ";
                if(exp[1].equals("true"))
                   ans+="Tap and gain ";
                else
