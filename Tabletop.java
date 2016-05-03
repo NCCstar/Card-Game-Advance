@@ -1,7 +1,7 @@
 /*
 To Do Short: Fighting 
 
-TO DO Long: 
+TO DO Long: Spells: Instant/Sorcery, Enchants, Perm
 
 TO DO list: 
 
@@ -263,19 +263,41 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       for(int i=0;i<battle[p].size();i++)
       {
          ArrayList<Integer> defers=atkOn.get(i);
-         
+         if(defers==null)
+         {
+            life[nP]-=battle[p].get(i).getStrong()+battle[p].get(i).getCounters()[0];
+         }
+         else
+         {
+            for(int k=0;k<defers.size();k++)
+            {
+               if(battle[p].get(i).getTough()>0)
+                  damage(battle[nP].get(defers.get(k)),battle[p].get(i));
+            }
+         }
       }
       
       for(int i=battle[p].size()-1;i>=0;i--)
       {
-         field[p].add(battle[p].get(i));
+         if(battle[p].get(i).getTough()<=0)
+            field[p].add(battle[p].get(i));
+         else
+            dis[p].add(battle[p].get(i));
          battle[p].remove(i);
       }
       for(int i=battle[nP].size()-1;i>=0;i--)
       {
-         field[nP].add(battle[nP].get(i));
+         if(battle[p].get(i).getTough()<=0)
+            field[nP].add(battle[nP].get(i));
+         else
+            dis[nP].add(battle[nP].get(i));
          battle[nP].remove(i);
       }
+   }
+   private void damage(Card c1,Card c2)
+   {
+      c1.hurt(c2.getStrong()+c2.getCounters()[0]);
+      c2.hurt(c1.getStrong()+c1.getCounters()[0]);
    }
    private void nextTurn()
    {  
@@ -471,7 +493,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                      preop.add(o);
                   }
                   
-                  if(mode==1)
+                  if(mode==1&&!card.isSick())
                   {
                      preop.add("Attack");
                   }
@@ -498,11 +520,15 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                               card.tap();
                               field[p].remove(i);
                               Object[] toBlock = battle[nP].toArray();
+                              for(int j=0;j<toBlock.length;j++)
+                              {
+                                 toBlock[j]=j+1+".) "+toBlock[j];
+                              }
                               Object input=JOptionPane.showInputDialog(null,"Which card to block?","Block",JOptionPane.INFORMATION_MESSAGE, null,toBlock, toBlock[0]);
                               int rid=-1;
-                              for(int j=0;i<battle[nP].size();j++)
+                              for(int j=0;j<toBlock.length;j++)
                               {
-                                 if(exe==battle[nP].get(j))
+                                 if(input==toBlock[j])
                                  {
                                     rid=j;
                                     break;

@@ -15,3 +15,5 @@ Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 1 1
 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 1 1
 Orekskos_Swiftclaw 1 w unit 1 0 0 0 0 1 0 0 3 1
 Orekskos_Swiftclaw 1 w unit 1 0 0 0 0 1 0 0 3 1
+Serra_Angel 1 w unit 2 0 0 0 0 3 2 Flying Vigilance 0 4 4
+Serra_Angel 1 w unit 2 0 0 0 0 3 2 Flying Vigilance 0 4 4

@@ -106,6 +106,15 @@ public class Card
    {
       return tough;
    }
+   public void hurt(int x)
+   {
+      while(counters[1]>0)
+      {
+         x--;
+         counters[1]--;
+      }
+      tough-=x;
+   }
    public void setRect(int l, int t, int r,int b)
    {
       rect.set(l,t,r,b);
