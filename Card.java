@@ -10,7 +10,7 @@ public class Card
 {
    private int owner;
    private Rect rect;
-   private String name;
+   private String name="";
    int numColor;
    private String color[];
    private String type;
@@ -37,7 +37,12 @@ public class Card
    {
       int i=0;
       String[] input = base.split(" ");
-      name=input[i++];
+      for(int j=Integer.parseInt(input[i++]);j>0;j--)
+      {
+         name+=input[i++];
+         if(j!=1)
+            name+=" ";
+      }
       numColor=Integer.parseInt(input[i++]);
       color=new String[numColor];
       for(int k=0;k<numColor;k++)
@@ -152,18 +157,26 @@ public class Card
       if(cost[0]>0)
          ans+="| White cost: "+cost[0]+" | ";
       if(cost[1]>0)
-         ans+="| Blue cost: "+cost[0]+" | ";
+         ans+="| Blue cost: "+cost[1]+" | ";
       if(cost[2]>0)
-         ans+="Green cost: "+cost[0]+" | ";
+         ans+="Green cost: "+cost[2]+" | ";
       if(cost[3]>0)
-         ans+="Red cost: "+cost[0]+" | ";
+         ans+="Red cost: "+cost[3]+" | ";
       if(cost[4]>0)
-         ans+="Black cost: "+cost[0]+" | ";
+         ans+="Black cost: "+cost[4]+" | ";
       if(cost[5]>0)
-         ans+="Colorless cost: "+cost[0]+" | ";
+         ans+="Colorless cost: "+cost[5]+" | ";
       if(getSumCost()>0)
          ans+="\n";
-      if(ability!=null)
+      if(attribute.length>0)
+      {
+         for(int i=0;i<attribute.length;i++)
+         {
+            ans+="- "+attribute[i]+" ";
+         }
+         ans+="-\n";
+      }
+      if(ability.length>0)
          for(int i=0;i<ability.length;i++)
          {
             String[] exp=ability[i].split("_");
@@ -210,7 +223,7 @@ public class Card
          }
       if(type.equals("unit"))
       {
-         ans+="Toughness: "+tough+" | Strength: "+strong+"\n";
+         ans+="Strength: "+strong+" | Toughness: "+tough+"\n";
          ans+="Counters: "+counters[0]+"/"+counters[1]+"\n";
       }
       if(tapped)

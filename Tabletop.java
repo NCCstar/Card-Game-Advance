@@ -1,9 +1,7 @@
 /*
-To Do Short: Fighting 
+To Do Short: Attributes, abilities when _ happens(triggered)
 
 TO DO Long: Spells: Instant/Sorcery, Enchants, Perm
-
-TO DO list: 
 
 Bugs:
 */
