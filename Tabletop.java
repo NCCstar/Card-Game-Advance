@@ -39,10 +39,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private ArrayList<Card>[] dis;
    private ArrayList<Card>[] field;
    private ArrayList<Card>[] chants;
+   private ArrayList<Card>[] battle;
    
-   private ArrayList<Card> atkers=new ArrayList();
-   private ArrayList<Card> defers=new ArrayList();
-
    private Rect pass; //next phase
    private Rect myDeck;//deck
    private Rect myDis;//discard
@@ -58,9 +56,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       deck=(ArrayList<Card>[])new ArrayList[pNum];
       dis=(ArrayList<Card>[])new ArrayList[pNum];
       field=(ArrayList<Card>[])new ArrayList[pNum];
-      //hill=(ArrayList<Card>[])new ArrayList[pNum];
-      //base=(ArrayList<Card>[])new ArrayList[pNum];
       chants=(ArrayList<Card>[])new ArrayList[pNum];
+      battle=(ArrayList<Card>[])new ArrayList[pNum];
       
       for(int i=0;i<pNum;i++)
       {
@@ -69,9 +66,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          deck[i] = new ArrayList<Card>();
          dis[i] = new ArrayList<Card>();
          field[i] = new ArrayList<Card>();
-         //hill[i] = new ArrayList<Card>();
-         //base[i] = new ArrayList<Card>();
          chants[i] = new ArrayList<Card>();
+         battle[i] = new ArrayList<Card>();
       }
       
       for(int i=0;i<pNum;i++)
@@ -130,6 +126,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                preop.add("Red");
             if(mana[p][4]>0)
                preop.add("Black");
+            if(mana[p][5]>0)
+               preop.add("Colorless");
             
             Object[] options=preop.toArray();
             String exe;
@@ -144,16 +142,19 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   mana[p][0]--;
                   break;
                case "Blue":
-                  mana[p][0]--;
+                  mana[p][1]--;
                   break;
                case "Green":
-                  mana[p][0]--;
+                  mana[p][2]--;
                   break;
                case "Red":
-                  mana[p][0]--;
+                  mana[p][3]--;
                   break;
                case "Black":
-                  mana[p][0]--;
+                  mana[p][4]--;
+                  break;
+               case "Colorless":
+                  mana[p][5]--;
                   break;
             }
          }
@@ -253,6 +254,21 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
    }
    */
+   private void fight()
+   {
+      int nP=p+1;nP%=2;
+   
+      for(int i=battle[p].size()-1;i>=0;i--)
+      {
+         field[p].add(battle[p].get(i));
+         battle[p].remove(i);
+      }
+      for(int i=battle[nP].size()-1;i>=0;i--)
+      {
+         field[nP].add(battle[nP].get(i));
+         battle[nP].remove(i);
+      }
+   }
    private void nextTurn()
    {  
       for(int k=0;k<6;k++)
@@ -262,12 +278,12 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       //check passing player's hand size (<=10)
       while(hand[p].size()>10)
       {
-         Object[] options = (Object[])hand;
+         Object[] options = (Object[])(hand[p].toArray());
          Object exe=JOptionPane.showInputDialog(null,"Your hand is too large.\nChoose a card to discard:","Discard Card",JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
          int rid=-1;
-         for(int i=0;i<hand.length;i++)
+         for(int i=0;i<hand[p].size();i++)
          {
-            if(exe==hand[i])
+            if(exe==hand[p].get(i))
             {
                rid=i;
                break;
@@ -329,8 +345,6 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             Card temp = deck[p].get(ran);
             deck[p].remove(ran);
             hand[p].add(temp);
-            if(!temp.getType().equals("unit"))
-               temp.unSick();
          }
       }
       else
@@ -349,7 +363,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          ans="There are no cards here.";
       JOptionPane.showMessageDialog(null,ans,name,JOptionPane.INFORMATION_MESSAGE);
    }
-   //master IO program - whenever mouse is clicked will check if on a card
+   //master IO program - whenever mouse is clicked will check if on a card and execute
    public void mouseClicked(MouseEvent e)
    {
       int nP=0;
@@ -359,10 +373,21 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       int y=e.getY();
       if(input==null)
       {
-         if(pass.contains(x,y))
+         if(pass.contains(x,y))//mode: 0=main1,1=atk,2=def,3=main2
          {
             mode++;
-            if(mode==4)
+            if(mode==2)
+            {
+               p++;
+               p%=2;
+            }
+            if(mode==3)
+            {
+               p++;
+               p%=2;
+               fight();
+            }
+            if(mode>=4)
                nextTurn();
          }
          if(myDeck.contains(x,y))
@@ -442,15 +467,32 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   }
                   if(mode==2)
                   {
-                     preop.add("Defend");
+                     preop.add("Block");
                   }
                   if(preop.size()>0)
                   {
                      Object[] options = preop.toArray();
                      Object exe=JOptionPane.showInputDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null,options, options[0]);
-                     if(!card.isTapped()&&exe!=null)
+                     if(exe!=null)
                      {
-                        doAbility((String)exe,card);
+                        if(exe.equals("Attack"))
+                        {
+                           battle[p].add(card);
+                           card.tap();
+                           field[p].remove(i);
+                        }
+                        else
+                           if(exe.equals("Block"))
+                           {
+                              battle[p].add(card);
+                              card.tap();
+                              field[p].remove(i);
+                           }
+                           else
+                              if(!card.isTapped())
+                              {
+                                 doAbility((String)exe,card);
+                              }
                      }
                   }
                   else
@@ -472,6 +514,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             for(int i=0;i<field[nP].size();i++)
             {
                Card card=field[nP].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
+                  break allLoop;
+               }
+            }
+            for(int i=0;i<battle[nP].size();i++)
+            {
+               Card card=battle[nP].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
+                  break allLoop;
+               }
+            }
+            for(int i=0;i<battle[p].size();i++)
+            {
+               Card card=battle[p].get(i);
                if(card.getRect().contains(x,y))
                {
                   JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE, null);
@@ -721,7 +781,22 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setColor(g,lands[p].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
-      
+         ref=0;
+         for(int i=0;i<battle[p].size();i++)
+         {
+            int xDim=0;
+            int yDim=0;
+            if(battle[p].get(i).isTapped())
+               xDim+=DIM/3;
+            else
+               yDim+=DIM/3;
+            battle[p].get(i).setRect((int)(DIM*(ref+4)),halfY+5,(int)(DIM*(ref+5))+xDim,halfY+DIM+yDim+5);
+            ref+=2;
+            Rect temp = battle[p].get(i).getRect();
+            g = setColor(g,battle[p].get(i));
+            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
+         }
+         
          int nP=0;
          nP=0;
          if(p==0)
@@ -796,6 +871,21 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          g.setColor(Color.LIGHT_GRAY);
          g.drawLine((int)(getWidth()-DIM*5.5),halfY-DIM,(int)(getWidth()-DIM*5.5),halfY-DIM*(dis+1));
          g.drawLine((int)(getWidth()-DIM*3.5),halfY-DIM,(int)(getWidth()-DIM*3.5),halfY-DIM*(dis+1));
+         ref=0;
+         for(int i=0;i<battle[nP].size();i++)
+         {
+            int xDim=0;
+            int yDim=0;
+            if(battle[nP].get(i).isTapped())
+               xDim+=DIM/3;
+            else
+               yDim+=DIM/3;
+            battle[nP].get(i).setRect((int)(DIM*(ref+4)),halfY-DIM-yDim-5,(int)(DIM*(ref+5))+xDim,halfY-5);
+            ref+=2;
+            Rect temp = battle[nP].get(i).getRect();
+            g = setColor(g,battle[nP].get(i));
+            g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
+         }
          
          g.setFont(new Font("Arial",Font.PLAIN,15));
          g.setColor(Color.white);

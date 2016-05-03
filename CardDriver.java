@@ -14,9 +14,14 @@ public class CardDriver
       }
       String ans[]=new String[2];
       
-      ans[0]=(String)JOptionPane.showInputDialog(null,"Player 1:","Choose A Deck",JOptionPane.INFORMATION_MESSAGE, null,(Object[])decks,(Object)decks[0]);
-      ans[1]=(String)JOptionPane.showInputDialog(null,"Player 2:","Choose A Deck",JOptionPane.INFORMATION_MESSAGE, null,(Object[])decks,(Object)decks[0]);
-           
+      do{
+         ans[0]=(String)JOptionPane.showInputDialog(null,"Player 1:","Choose A Deck",JOptionPane.INFORMATION_MESSAGE, null,(Object[])decks,(Object)decks[0]);
+      }while(ans[0]==null);
+      
+      do{
+         ans[1]=(String)JOptionPane.showInputDialog(null,"Player 2:","Choose A Deck",JOptionPane.INFORMATION_MESSAGE, null,(Object[])decks,(Object)decks[0]);
+      }while(ans[1]==null);
+      
       Tabletop tabletop = new Tabletop(ans);
       JFrame frame = new JFrame("Card Game");	//window title
       frame.setSize(700, 700);					//Size of game window

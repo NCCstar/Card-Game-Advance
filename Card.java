@@ -66,7 +66,8 @@ public class Card
       strong=Integer.parseInt(input[i++]);
       tough=Integer.parseInt(input[i++]);
       
-      sumSick=true;
+      if(type.equals("unit"))
+         sumSick=true;
       rect = new Rect();
    }
    public boolean isTapped()
@@ -138,12 +139,11 @@ public class Card
    }
    public String toString()
    {
-      String ans=" | ";
-      
+      String ans=name+"\n";
       if(cost[0]>0)
-         ans+="White cost: "+cost[0]+" | ";
+         ans+="| White cost: "+cost[0]+" | ";
       if(cost[1]>0)
-         ans+="Blue cost: "+cost[0]+" | ";
+         ans+="| Blue cost: "+cost[0]+" | ";
       if(cost[2]>0)
          ans+="Green cost: "+cost[0]+" | ";
       if(cost[3]>0)
@@ -152,14 +152,15 @@ public class Card
          ans+="Black cost: "+cost[0]+" | ";
       if(cost[5]>0)
          ans+="Colorless cost: "+cost[0]+" | ";
-      ans+="\n";
+      if(getSumCost()>0)
+         ans+="\n";
       if(ability!=null)
          for(int i=0;i<ability.length;i++)
          {
             String[] exp=ability[i].split("_");
             if(exp[0].equals("manaAdd"))
             {
-               ans=": ";
+               ans+=": ";
                if(exp[1].equals("true"))
                   ans+="Tap and add ";
                else
@@ -189,7 +190,7 @@ public class Card
             }
             if(exp[0].equals("lifeAdd"))
             {
-               ans=": ";
+               ans+=": ";
                if(exp[1].equals("true"))
                   ans+="Tap and gain ";
                else
