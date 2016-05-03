@@ -46,4 +46,27 @@ public class u
    {
       return (int)(Math.random()*(high-low+1)+low);
    }
+   public static Map flip(Map<Integer, Integer> m)
+   {
+      Map<Integer, ArrayList<Integer>> ans = new TreeMap();
+      Object[] keys = m.keySet().toArray();
+      
+      for(Object key:keys)
+      {
+         Object val=m.get(key);
+         if(ans.containsKey(val))
+         {
+            ArrayList<Integer> keysIn = ans.get(val);
+            keysIn.add((Integer)key);
+            ans.put((Integer)val,keysIn);
+         }
+         else
+         {
+            ArrayList<Integer> keysIn = new ArrayList();
+            keysIn.add((Integer)key);
+            ans.put((Integer)val,keysIn);
+         }
+      }
+      return ans;
+   }
 }

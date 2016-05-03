@@ -254,10 +254,18 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
    }
    */
+   private Map<Integer, Integer> defOn = new TreeMap();
    private void fight()
    {
       int nP=p+1;nP%=2;
-   
+      
+      Map<Integer, ArrayList<Integer>> atkOn = u.flip(defOn);
+      for(int i=0;i<battle[p].size();i++)
+      {
+         ArrayList<Integer> defers=atkOn.get(i);
+         
+      }
+      
       for(int i=battle[p].size()-1;i>=0;i--)
       {
          field[p].add(battle[p].get(i));
@@ -380,12 +388,14 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             {
                p++;
                p%=2;
+               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
             }
             if(mode==3)
             {
                p++;
                p%=2;
                fight();
+               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
             }
             if(mode>=4)
                nextTurn();
@@ -487,6 +497,18 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                               battle[p].add(card);
                               card.tap();
                               field[p].remove(i);
+                              Object[] toBlock = battle[nP].toArray();
+                              Object input=JOptionPane.showInputDialog(null,"Which card to block?","Block",JOptionPane.INFORMATION_MESSAGE, null,toBlock, toBlock[0]);
+                              int rid=-1;
+                              for(int j=0;i<battle[nP].size();j++)
+                              {
+                                 if(exe==battle[nP].get(j))
+                                 {
+                                    rid=j;
+                                    break;
+                                 }
+                              }
+                              defOn.put(i,rid);
                            }
                            else
                               if(!card.isTapped())
@@ -540,150 +562,6 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             }
          }while(false);
       }
-      /* //-target
-      else
-      {
-         int lClick=MouseEvent.BUTTON1;
-         allLoop:
-         do
-         {
-            if(input.equals("any")||input.equals("well"))
-               for(int i=0;i<wells[p].size();i++)
-               {
-                  Card card=base[p].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,wells[p],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }  
-            if(input.equals("any")||input.equals("chant"))
-               for(int i=0;i<chant[p].size();i++)
-               {
-                  Card card=chant[p].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,chant[p],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               } 
-            if(input.equals("any")||input.equals("unit"))
-               for(int i=0;i<base[p].size();i++)
-               {
-                  Card card=base[p].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,base[p],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }
-            if(input.equals("any")||input.equals("unit"))
-               for(int i=0;i<hill[p].size();i++)
-               {
-                  Card card=hill[p].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,hill[p],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }
-            if(input.equals("any")||input.equals("unit"))
-               for(int i=0;i<field[p].size();i++)
-               {
-                  Card card=field[p].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,field[p],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }  
-            if(input.equals("any")||input.equals("unit"))   
-               for(int i=0;i<base[nP].size();i++)
-               {
-                  Card card=base[nP].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,base[nP],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }
-            if(input.equals("any")||input.equals("unit"))
-               for(int i=0;i<hill[nP].size();i++)
-               {
-                  Card card=hill[nP].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,hill[nP],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }
-            if(input.equals("any")||input.equals("unit"))
-               for(int i=0;i<field[nP].size();i++)
-               {
-                  Card card=field[nP].get(i); 
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,field[nP],i);
-                        break allLoop;
-                     }
-                     else
-                        JOptionPane.showMessageDialog(null,card.toString(),card.getName(),JOptionPane.INFORMATION_MESSAGE);
-                  }
-               }
-            if(input.equals("any"))
-               for(int i=0;i<hand[nP].size();i++)
-               {
-                  Card card=hand[nP].get(i);
-                  if(card.getRect().contains(x,y))
-                  {
-                     if(e.getButton()==lClick)
-                     {
-                        playMagic(card,hand[nP],i);
-                        break allLoop;
-                     }
-                  }
-               }
-         
-         }while(false);
-      }
-      */
       repaint();
    }
    private boolean attack(int index,int which)
