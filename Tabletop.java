@@ -68,7 +68,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          chants[i] = new ArrayList<Card>();
          battle[i] = new ArrayList<Card>();
       }
-      Card last = new Card();
+      String last = "";
       for(int i=0;i<pNum;i++)
       {
          Scanner input = new Scanner(new FileReader("Decks/"+decks[i]));
@@ -79,14 +79,13 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                int repeat=Integer.parseInt(line);
                for(int j=0;j<repeat;j++)
                {
-                  deck[i].add(last);
+                  deck[i].add(new Card(last));
                }
             }
             catch(Exception e)
             {
-               Card in=new Card(line);
-               deck[i].add(in);
-               last=in;
+               deck[i].add(new Card(line));
+               last=line;
             }
          }
       }
@@ -435,11 +434,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             if(mode==3)
             {
                hideHand=true;
-               fight();
                repaint();
                JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
                p++;
                p%=2;
+               fight();
                hideHand=false;
                repaint();
             }
@@ -516,7 +515,6 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   {
                      preop.add(o);
                   }
-                  
                   if(mode==1&&!card.isSick())
                   {
                      preop.add("Attack");
