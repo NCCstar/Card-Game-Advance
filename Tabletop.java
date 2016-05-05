@@ -27,6 +27,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private Card actMagic=null;
    private String chantStr[] = new String[pNum];
    private boolean landPlayed[] = new boolean[2];
+   private boolean hideHand=false;
    
    private int[][] mana=new int[2][6];//[player][color] - tap land to add, cast cards to remove
    //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
@@ -67,13 +68,26 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          chants[i] = new ArrayList<Card>();
          battle[i] = new ArrayList<Card>();
       }
-      
+      Card last = new Card();
       for(int i=0;i<pNum;i++)
       {
          Scanner input = new Scanner(new FileReader("Decks/"+decks[i]));
          while(input.hasNextLine())
          {
-            deck[i].add(new Card(input.nextLine()));
+            String line=input.nextLine();
+            try{
+               int repeat=Integer.parseInt(line);
+               for(int j=0;j<repeat;j++)
+               {
+                  deck[i].add(last);
+               }
+            }
+            catch(Exception e)
+            {
+               Card in=new Card(line);
+               deck[i].add(in);
+               last=in;
+            }
          }
       }
       draw(7,0);
@@ -339,7 +353,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          System.exit(0);
       }
       //switch player and draw 1
+      hideHand=true;
+      repaint();
       JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
+      hideHand=false;
+      repaint();
       if(p==pNum-1)
          p=0;
       else
@@ -406,16 +424,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             mode++;
             if(mode==2)
             {
+               hideHand=true;
+               repaint();
+               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
                p++;
                p%=2;
-               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
+               hideHand=false;
+               repaint();
             }
             if(mode==3)
             {
+               hideHand=true;
+               fight();
+               repaint();
+               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
                p++;
                p%=2;
-               fight();
-               JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
+               hideHand=false;
+               repaint();
             }
             if(mode>=4)
                nextTurn();
@@ -629,8 +655,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             hand[p].get(i).setRect((int)(DIM*(ref+1)),getHeight()-DIM*2,(int)(DIM*(ref+2)),getHeight()-DIM);
             ref+=1.5;
             Rect temp = hand[p].get(i).getRect();
-            g = setColor(g,hand[p].get(i));
-            if(hand[p].get(i).getType().equals("land"))
+            if(hideHand)
+               g.setColor(Color.red.darker());
+            else
+               g = setColor(g,hand[p].get(i));
+            if(hand[p].get(i).getType().equals("land")||hideHand)
             {
                g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
             }
@@ -644,7 +673,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
                }
             g = setTextColor(g);
-            g.drawString(hand[p].get(i).getSumCost()+"",temp.getLeft()+10,temp.getBottom()-5);
+            if(!hideHand)
+               g.drawString(hand[p].get(i).getSumCost()+"",temp.getLeft()+10,temp.getBottom()-5);
          }
          ref=0;
          int dis=1;

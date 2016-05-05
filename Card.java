@@ -27,11 +27,7 @@ public class Card
    
    public Card()
    {
-      name="Plains";
-      color=new String[1];
-      color[0]="w";
-      type="land";
-      rect=new Rect();
+      this("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0");
    }
    public Card(String base)//color, type, cost
    {
