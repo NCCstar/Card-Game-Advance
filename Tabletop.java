@@ -212,6 +212,14 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          life[p]+=Integer.parseInt(abi[2]);
          card.tap();
       }
+      checkTrig(abi[0]);
+   }
+   private void checkTrig(String trig)
+   {
+      for(Card c:field[p])
+      {
+         c.doTrig(trig);
+      }
    }
    /*
    private void playMagic(Card aimed,ArrayList<Card> aimedList,int inx)
@@ -290,7 +298,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       
       for(int i=battle[p].size()-1;i>=0;i--)
       {
-         if(battle[p].get(i).getTough()<=0)
+         if(battle[p].get(i).getTough()>0)
             field[p].add(battle[p].get(i));
          else
             dis[p].add(battle[p].get(i));
@@ -298,7 +306,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       for(int i=battle[nP].size()-1;i>=0;i--)
       {
-         if(battle[p].get(i).getTough()<=0)
+         if(battle[nP].get(i).getTough()>0)
             field[nP].add(battle[nP].get(i));
          else
             dis[nP].add(battle[nP].get(i));
@@ -521,7 +529,24 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   }
                   if(mode==2)
                   {
-                     preop.add("Block");
+                     boolean canBlock=false;
+                     if(card.conAtt("Flying")||card.conAtt("Reach"))
+                     {
+                        canBlock=true;
+                     }
+                     else
+                     {
+                        for(Card c:battle[nP])
+                        {
+                           if(!c.conAtt("Flying"))
+                           {
+                              canBlock=true;
+                              break;
+                           }
+                        }
+                     }
+                     if(canBlock)
+                        preop.add("Block");
                   }
                   if(preop.size()>0)
                   {
@@ -532,7 +557,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                         if(exe.equals("Attack"))
                         {
                            battle[p].add(card);
-                           card.tap();
+                           if(!card.conAtt("Vigilance"))
+                              card.tap();
                            field[p].remove(i);
                         }
                         else
@@ -544,7 +570,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                               Object[] toBlock = battle[nP].toArray();
                               for(int j=0;j<toBlock.length;j++)
                               {
-                                 toBlock[j]=j+1+".) "+toBlock[j];
+                                 if(!battle[nP].get(j).conAtt("Flying"))
+                                    toBlock[j]=j+1+".) "+toBlock[j];
                               }
                               Object input=JOptionPane.showInputDialog(null,"Which card to block?","Block",JOptionPane.INFORMATION_MESSAGE, null,toBlock, toBlock[0]);
                               int rid=-1;
@@ -675,7 +702,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                g.drawString(hand[p].get(i).getSumCost()+"",temp.getLeft()+10,temp.getBottom()-5);
          }
          ref=0;
-         int dis=1;
+         int dis=2;
          g.setFont(new Font("Ariel",Font.PLAIN,25));
          for(int i=0;i<field[p].size();i++) //draw field
          {
@@ -731,7 +758,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          nP=0;
          if(p==0)
             nP=1;//nP is not-player number
-         dis=1;//y ref
+         dis=2;//y ref
          ref=0;//x ref
          for(int i=0;i<field[nP].size();i++)
          {
@@ -889,6 +916,9 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             break;
          case "d":
             g.setColor(Color.black);
+            break;
+         default:
+            g.setColor(new Color(204,207,188));
             break;
       }  
       if(card.isSick())

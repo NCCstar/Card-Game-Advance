@@ -22,6 +22,7 @@ public class Card
    private int[] counters=new int[2];//(atk,def)
    private String[] ability;
    private String[] attribute;
+   private String[] trigger;
    private boolean tapped;
    private boolean sumSick;
    
@@ -63,12 +64,18 @@ public class Card
       {
          ability[k]=input[i++];
       }
+      trigger=new String[Integer.parseInt(input[i++])];
+      for(int k=0;k<trigger.length;k++)
+      {
+         trigger[k]=input[i++];
+      }
       //unit stuff
       strong=Integer.parseInt(input[i++]);
       tough=Integer.parseInt(input[i++]);
       
       if(type.equals("unit"))
          sumSick=true;
+      maxHP=tough;
       rect = new Rect();
    }
    public boolean isTapped()
@@ -136,6 +143,38 @@ public class Card
    {
       return ability;
    }
+   public boolean conAtt(String key)//containsAttributes
+   {
+      for(String i:attribute)
+      {
+         if(i.equals(key))
+            return true;
+      }
+      return false;
+   }
+   public void doTrig(String trig)
+   {
+      String effect=null;
+      for(String i:trigger)
+      {
+         if(i.split("_")[0].equals(trig))
+         {
+            effect=i;
+         }
+      }
+      if(effect!=null)
+      {
+         String[] exp=effect.split("_");
+         if(exp[1].equals("counterAdd"))
+         {
+            for(int i=0;i<Integer.parseInt(exp[2]);i++)
+            {
+               counters[0]+=1;
+               counters[1]+=1;
+            }
+         }
+      }
+   }
    public int[] getCost()
    {
       return cost;
@@ -172,51 +211,63 @@ public class Card
          }
          ans+="-\n";
       }
-      if(ability.length>0)
-         for(int i=0;i<ability.length;i++)
+      //if(ability.length>0)
+      for(int i=0;i<ability.length;i++)
+      {
+         String[] exp=ability[i].split("_");
+         if(exp[0].equals("manaAdd"))
          {
-            String[] exp=ability[i].split("_");
-            if(exp[0].equals("manaAdd"))
+            ans+=": ";
+            if(exp[1].equals("true"))
+               ans+="Tap and add ";
+            else
+               ans+="Add ";
+            ans+=exp[3];
+            switch(Integer.parseInt(exp[2]))
             {
-               ans+=": ";
-               if(exp[1].equals("true"))
-                  ans+="Tap and add ";
-               else
-                  ans+="Add ";
-               ans+=exp[3];
-               switch(Integer.parseInt(exp[2]))
-               {
-                  case 0:
-                     ans+=" white mana.\n";
-                     break;
-                  case 1:
-                     ans+=" blue mana.\n";
-                     break;
-                  case 2:
-                     ans+=" green mana.\n";
-                     break;
-                  case 3:
-                     ans+=" red mana.\n";
-                     break;
-                  case 4:
-                     ans+=" black mana.\n";
-                     break;
-                  default:
-                     ans+=" colorless mana.\n";
-                     break;
-               }
-            }
-            if(exp[0].equals("lifeAdd"))
-            {
-               ans+=": ";
-               if(exp[1].equals("true"))
-                  ans+="Tap and gain ";
-               else
-                  ans+="Gain ";
-               ans+=exp[2];
-               ans+=" life.\n";
+               case 0:
+                  ans+=" white mana.\n";
+                  break;
+               case 1:
+                  ans+=" blue mana.\n";
+                  break;
+               case 2:
+                  ans+=" green mana.\n";
+                  break;
+               case 3:
+                  ans+=" red mana.\n";
+                  break;
+               case 4:
+                  ans+=" black mana.\n";
+                  break;
+               default:
+                  ans+=" colorless mana.\n";
+                  break;
             }
          }
+         if(exp[0].equals("lifeAdd"))
+         {
+            ans+=": ";
+            if(exp[1].equals("true"))
+               ans+="Tap and gain ";
+            else
+               ans+="Gain ";
+            ans+=exp[2];
+            ans+=" life.\n";
+         }
+      }
+      for(int i=0;i<trigger.length;i++)
+      {
+         String[] exp=trigger[i].split("_");
+         if(exp[0].equals("lifeAdd"))
+         {
+            ans+="When you gain life, ";            
+         }
+         if(exp[1].equals("counterAdd"))
+         {
+            ans+="add "+exp[2]+" +1/+1 counters.\n";
+         }
+      }
       if(type.equals("unit"))
       {
          ans+="Strength: "+strong+" | Toughness: "+tough+"\n";

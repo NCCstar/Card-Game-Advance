@@ -1,8 +1,10 @@
-1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0
+1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0
 7
-1 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 1 1
-1
-2 Orekskos Swiftclaw 1 w unit 1 0 0 0 0 1 0 0 3 1
-1
-2 Serra Angel 1 w unit 2 0 0 0 0 3 2 Flying Vigilance 0 4 4
-1
+1 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 0 1 1
+4
+2 Orekskos Swiftclaw 1 w unit 1 0 0 0 0 1 0 0 0 3 1
+0
+2 Serra Angel 1 w unit 2 0 0 0 0 3 2 Flying Vigilance 0 0 4 4
+0
+2 Tigre Dude 1 w unit 1 0 0 0 0 1 0 0 1 lifeAdd_counterAdd_1 2 2
+4
