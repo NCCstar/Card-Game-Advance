@@ -28,7 +28,7 @@ public class Card
    
    public Card()
    {
-      this("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0");
+      this("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0");
    }
    public Card(String base)//color, type, cost
    {
@@ -152,7 +152,7 @@ public class Card
       }
       return false;
    }
-   public void doTrig(String trig)
+   public void doTrig(String trig)//execute given trigger if exists
    {
       String effect=null;
       for(String i:trigger)
@@ -172,6 +172,10 @@ public class Card
                counters[0]+=1;
                counters[1]+=1;
             }
+         }
+         if(exp[1].equals("untap"))
+         {
+            tapped=false;
          }
       }
    }
@@ -263,9 +267,25 @@ public class Card
          {
             ans+="When you gain life, ";            
          }
+         if(exp[0].equals("onOtherEnter"))
+         {
+            ans+="When another unit enters the battlefield ";
+         }
+         if(exp[0].equals("onEnter"))
+         {
+            ans+="When this unit enters the battlefield ";
+         }
          if(exp[1].equals("counterAdd"))
          {
             ans+="add "+exp[2]+" +1/+1 counters.\n";
+         }
+         if(exp[1].equals("lifeAdd"))
+         {
+            ans+="gain "+exp[2]+" life.";
+         }
+         if(exp[1].equals("untap"))
+         {
+            ans+="untap this card.\n";
          }
       }
       if(type.equals("unit"))

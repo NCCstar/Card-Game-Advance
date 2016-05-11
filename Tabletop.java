@@ -90,7 +90,12 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          }
       }
       draw(7,0);
-      draw(7,1);  
+      draw(7,1); 
+      lands[1].add(new Card()); 
+      lands[0].add(new Card()); 
+      lands[0].add(new Card()); 
+      lands[0].add(new Card()); 
+      hand[0].add(new Card("2 Midnight Guard 1 w unit 1 0 0 0 0 2 1 Haste 0 1 onOtherEnter_untap 2 3"));
    }
    private boolean play(int i)
    {
@@ -179,7 +184,13 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          else
             if(temp.getType().equals("unit"))
             {
+               doAbility("onOtherEnter",temp);
+               temp.doTrig("onEnter");
                field[p].add(temp);
+               if(temp.conAtt("Haste"))
+               {
+                  temp.unSick();
+               }
                hand[p].remove(i);
             }
             else
@@ -216,6 +227,14 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    }
    private void checkTrig(String trig)
    {
+      int nP=p+1;nP%=2;
+      if(trig.equals("onOtherEnter"))
+      {
+         for(Card c:field[nP])
+         {
+            c.doTrig(trig);
+         }
+      }
       for(Card c:field[p])
       {
          c.doTrig(trig);
