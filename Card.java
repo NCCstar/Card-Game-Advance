@@ -25,6 +25,7 @@ public class Card
    private String[] trigger;
    private boolean tapped;
    private boolean sumSick;
+   private Card target;
    
    public Card()
    {
@@ -106,9 +107,14 @@ public class Card
    {
       return strong;
    }
-   public int[] getCounters()
+   public void unCount(int n)
    {
-      return counters;
+      strong-=n;
+   }
+   public void tempCount(int n)
+   {
+      strong+=n;
+      tough+=n;
    }
    public int getTough()
    {
@@ -145,6 +151,10 @@ public class Card
    {
       return ability;
    }
+   public String[] getTrigger()
+   {
+      return trigger;
+   }
    public boolean conAtt(String key)//containsAttributes
    {
       for(String i:attribute)
@@ -153,6 +163,16 @@ public class Card
             return true;
       }
       return false;
+   }
+   public void countUp(int n)
+   {
+      for(int i=0;i<n;i++)
+      {
+         counters[0]+=1;
+         counters[1]+=1;
+         strong+=1;
+         tough+=1;
+      }
    }
    public void doTrig(String trig)//execute given trigger if exists
    {
@@ -285,7 +305,7 @@ public class Card
          }
          if(exp[1].equals("lifeAdd"))
          {
-            ans+="gain "+exp[2]+" life.";
+            ans+="gain "+exp[2]+" life.\n";
          }
          if(exp[1].equals("untap"))
          {

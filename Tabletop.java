@@ -92,8 +92,6 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       draw(7,0);
       draw(7,1); 
       //add mulligan
-      field[p].add(new Card("2 Ajani's Playmate 1 w unit 1 0 0 0 0 1 0 0 1 lifeAdd_counterAdd_1 2 2"));
-      field[p].add(new Card("1 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 0 1 1"));
    }
    private boolean play(int i)
    {
@@ -221,21 +219,44 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          life[p]+=Integer.parseInt(abi[2]);
          card.tap();
       }
-      checkTrig(abi[0]);
-   }
-   private void checkTrig(String trig)
-   {
-      int nP=p+1;nP%=2;
-      if(trig.equals("onOtherEnter"))
+      if(abi[0].equals("onOtherEnter"))
       {
+         int nP=p+1;nP%=2;
          for(Card c:field[nP])
          {
-            c.doTrig(trig);
+            checkTrig(abi[0],c);
          }
       }
       for(Card c:field[p])
       {
-         c.doTrig(trig);
+         checkTrig(abi[0],c);
+      }
+   }
+   private void checkTrig(String trig,Card c)
+   {
+      String effect=null;
+      String[] trigger = c.getTrigger();
+      for(String i:trigger)
+      {
+         if(i.split("_")[0].equals(trig))
+         {
+            effect=i;
+         }
+      }
+      if(effect!=null)
+      {
+         String[] exp=effect.split("_");
+         if(exp[1].equals("counterAdd"))
+         {
+            for(int i=0;i<Integer.parseInt(exp[2]);i++)
+            {
+               c.countUp(1);
+            }
+         }
+         if(exp[1].equals("untap"))
+         {
+            c.untap();
+         }
       }
    }
    /*
@@ -301,7 +322,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          ArrayList<Integer> defers=atkOn.get(i);
          if(defers==null)
          {
-            life[nP]-=battle[p].get(i).getStrong()+battle[p].get(i).getCounters()[0];
+            life[nP]-=battle[p].get(i).getStrong();
          }
          else
          {
@@ -332,8 +353,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    }
    private void damage(Card c1,Card c2)
    {
-      c1.hurt(c2.getStrong()+c2.getCounters()[0]);
-      c2.hurt(c1.getStrong()+c1.getCounters()[0]);
+      c1.hurt(c2.getStrong());
+      c2.hurt(c1.getStrong());
    }
    private void nextTurn()
    {  
