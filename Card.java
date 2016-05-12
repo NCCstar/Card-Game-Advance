@@ -116,11 +116,13 @@ public class Card
    }
    public void hurt(int x)
    {
+      /*
       while(counters[1]>0)
       {
          x--;
          counters[1]--;
       }
+      */
       tough-=x;
    }
    public void setRect(int l, int t, int r,int b)
@@ -171,6 +173,8 @@ public class Card
             {
                counters[0]+=1;
                counters[1]+=1;
+               strong+=1;
+               tough+=1;
             }
          }
          if(exp[1].equals("untap"))
@@ -192,11 +196,11 @@ public class Card
    }
    public String toString()
    {
-      String ans=name+"\n";
+      String ans=name+"\n| ";
       if(cost[0]>0)
-         ans+="| White cost: "+cost[0]+" | ";
+         ans+="White cost: "+cost[0]+" | ";
       if(cost[1]>0)
-         ans+="| Blue cost: "+cost[1]+" | ";
+         ans+="Blue cost: "+cost[1]+" | ";
       if(cost[2]>0)
          ans+="Green cost: "+cost[2]+" | ";
       if(cost[3]>0)

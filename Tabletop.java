@@ -91,11 +91,9 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       draw(7,0);
       draw(7,1); 
-      lands[1].add(new Card()); 
-      lands[0].add(new Card()); 
-      lands[0].add(new Card()); 
-      lands[0].add(new Card()); 
-      hand[0].add(new Card("2 Midnight Guard 1 w unit 1 0 0 0 0 2 1 Haste 0 1 onOtherEnter_untap 2 3"));
+      //add mulligan
+      field[p].add(new Card("2 Ajani's Playmate 1 w unit 1 0 0 0 0 1 0 0 1 lifeAdd_counterAdd_1 2 2"));
+      field[p].add(new Card("1 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 0 1 1"));
    }
    private boolean play(int i)
    {
