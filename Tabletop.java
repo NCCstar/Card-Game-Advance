@@ -1,7 +1,7 @@
 /*
-To Do Short: Attributes, abilities when _ happens(triggered)
+To Do Short: enchants, artifacts
 
-TO DO Long: Spells: Instant/Sorcery, Enchants, Perm
+TO DO Long: Spells: Instant/Sorcery
 
 Bugs:
 */
@@ -170,11 +170,16 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   break;
             }
          }
-         
+         if(temp.hasColor("w"))
+         {
+            checkAllTrig("onWhiteEnter");
+         }
          if(temp.getType().equals("land"))
          {
             lands[p].add(temp);
-            landPlayed[p]=true;
+            //------------------------------------------------------------------------------------------------------------------------------------------------
+            landPlayed[p]=false;//----------------------------------------------------------------------------------------------------------------------------
+            //------------------------------------------------------------------------------------------------------------------------------------------------
             hand[p].remove(i);
          }
          else
@@ -190,17 +195,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                hand[p].remove(i);
             }
             else
-               if(temp.getType().equals("chant"))
+               if(temp.getType().equals("enchant"))
                {
                   chants[p].add(temp);
                   hand[p].remove(i);
                }
-               else 
-                  if(temp.getType().equals("magic"))
-                  {
-                     //fix target later
-                     hand[p].remove(i);
-                  }
          
          return true;
       }
@@ -227,9 +226,17 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             checkTrig(abi[0],c);
          }
       }
+      checkAllTrig(abi[0]);
+   }
+   private void checkAllTrig(String abi)
+   {
       for(Card c:field[p])
       {
-         checkTrig(abi[0],c);
+         checkTrig(abi,c);
+      }
+      for(Card c:chants[p])
+      {
+         checkTrig(abi,c);
       }
    }
    private void checkTrig(String trig,Card c)
@@ -256,6 +263,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          if(exp[1].equals("untap"))
          {
             c.untap();
+         }
+         if(exp[1].equals("lifeAdd"))
+         {
+            life[p]+=Integer.parseInt(exp[2]);
          }
       }
    }

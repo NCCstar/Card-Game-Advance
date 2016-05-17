@@ -45,6 +45,8 @@ public class Card
       color=new String[numColor];
       for(int k=0;k<numColor;k++)
          color[k]=input[i++];
+      if(color.length<=0)
+         color=new String[]{"c"};
       type=input[i++];
       //mana cost
       cost[0]=Integer.parseInt(input[i++]);
@@ -299,6 +301,10 @@ public class Card
          {
             ans+="When this unit enters the battlefield ";
          }
+         if(exp[0].equals("onWhiteEnter"))
+         {
+            ans+="When you play a white card ";
+         }
          if(exp[1].equals("counterAdd"))
          {
             ans+="add "+exp[2]+" +1/+1 counters.\n";
@@ -326,5 +332,14 @@ public class Card
    public String[] getColor()
    {
       return color;
+   }
+   public boolean hasColor(String x)
+   {
+      for(String c:color)
+      {
+         if(c.equals(x))
+            return true;
+      }
+      return false;
    }
 }

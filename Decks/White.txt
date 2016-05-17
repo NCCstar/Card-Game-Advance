@@ -1,16 +1,18 @@
 1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0
-8
+12
 1 Soulmender 1 w unit 1 0 0 0 0 0 0 1 lifeAdd_true_1 0 1 1
-4
+0
 2 Orekskos Swiftclaw 1 w unit 1 0 0 0 0 1 0 0 0 3 1
 0
 2 Serra Angel 1 w unit 2 0 0 0 0 3 2 Flying Vigilance 0 0 4 4
 0
 2 Ajani's Playmate 1 w unit 1 0 0 0 0 1 0 0 1 lifeAdd_counterAdd_1 2 2
-4
+0
 2 Tireless Missionaries 1 w unit 1 0 0 0 0 4 0 0 1 onEnter_lifeAdd_3 2 3
 0
 2 Midnight Guard 1 w unit 1 0 0 0 0 2 0 0 1 onOtherEnter_untap 2 3
 0
 2 Skirmisher Dude 1 w unit 1 0 0 0 0 1 0 0 1 onEnter_tempCount_1 2 2
 0
+5 Staff of the Sun Magus 0 enchant 0 0 0 0 0 3 0 0 1 onWhiteEnter_lifeAdd_1 0 0
+5
