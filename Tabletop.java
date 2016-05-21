@@ -28,6 +28,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private String chantStr[] = new String[pNum];
    private boolean landPlayed[] = new boolean[2];
    private boolean hideHand=false;
+   private Map<Integer, Integer> defOn = new TreeMap();
+
    
    private int[][] mana=new int[2][6];//[player][color] - tap land to add, cast cards to remove
    //0=white,1=blue,2=green,3=red,4=black(d),5=colorless(n)
@@ -220,7 +222,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       if(abi[0].equals("onOtherEnter"))
       {
-         int nP=p+1;nP%=2;
+         int nP=(p+1)%2;
          for(Card c:field[nP])
          {
             checkTrig(abi[0],c);
@@ -322,10 +324,9 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
    }
    */
-   private Map<Integer, Integer> defOn = new TreeMap();
    private void fight()
    {
-      int nP=p+1;nP%=2;
+      int nP=(p+1)%2;
       
       Map<Integer, ArrayList<Integer>> atkOn = u.flip(defOn);
       for(int i=0;i<battle[p].size();i++)
@@ -395,9 +396,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          field[p].get(i).heal();
       }
       //who's dead
-      int nP=0;
-      if(p==0)
-         nP++;
+      int nP=(p+1)%2;
       if(life[nP]<1)
       {
          JOptionPane.showMessageDialog(null,"Player "+(p+1)+" wins!");
@@ -414,13 +413,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       JOptionPane.showMessageDialog(null,"Player "+(p+1)+" take control.");
       hideHand=false;
       repaint();
-      if(p==pNum-1)
-         p=0;
-      else
-         p++;
-      nP=0;
-      if(p==0)
-         nP++;
+      p=(p+1)%pNum;
+      nP=(p+1)%pNum;
       draw(1,p);
       mode=0;
       //upkeep
@@ -468,9 +462,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    //master IO program - whenever mouse is clicked will check if on a card and execute
    public void mouseClicked(MouseEvent e)
    {
-      int nP=0;
-      if(p==0)
-         nP=1;
+      int nP=(p+1)%2;
       int x=e.getX();
       int y=e.getY();
       if(input==null)
@@ -690,9 +682,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    }
    private boolean attack(int index,int which)
    {
-      int nP=0;
-      if(p==0)
-         nP=1;
+      int nP=(1+p)%2;
       ArrayList<Card> atking;
       ArrayList<Card> defing;
       
@@ -803,10 +793,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
          }
          
-         int nP=0;
-         nP=0;
-         if(p==0)
-            nP=1;//nP is not-player number
+         int nP=(p+1)%2;//nP is not-player number
          dis=2;//y ref
          ref=0;//x ref
          for(int i=0;i<field[nP].size();i++)
