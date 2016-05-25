@@ -188,7 +188,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             if(temp.getType().equals("unit"))
             {
                doAbility("onOtherEnter",temp);
-               temp.doTrig("onEnter");
+               checkTrig("onEnter",temp);
                field[p].add(temp);
                if(temp.conAtt("Haste"))
                {
