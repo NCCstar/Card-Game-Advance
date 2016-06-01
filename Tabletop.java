@@ -23,8 +23,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    private int[] life={20,20};
    private String[] names;
    private final int DIM=30;//dimensions of items
-   private String input=null;
-   private Card actMagic=null;
+   private boolean[] able=new boolean[6];//0=enemy land,1=enemy field,2=enemy battle,3=my battle,4=my field,5=my lands
+   private Card target=null;
+   private String holdExe=null;
+   private Card holdCard = null;
    private String chantStr[] = new String[pNum];
    private boolean landPlayed[] = new boolean[2];
    private boolean hideHand=false;
@@ -51,6 +53,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    {
       addMouseListener( this );
       addMouseMotionListener( this );
+   
+      for(int i=0;i<able.length;i++)
+      {
+         able[i]=true;
+      }
    
       lands=(ArrayList<Card>[])new ArrayList[pNum];
       hand=(ArrayList<Card>[])new ArrayList[pNum];
@@ -93,10 +100,15 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       draw(7,0);
       draw(7,1); 
-      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
-      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
-      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
-      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      
+      lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       //add mulligan
    }
    private boolean play(int i)
@@ -209,18 +221,49 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                else
                   if(temp.getType().equals("instant"))
                   {
-                     String[] triggers=temp.getTrigger();
-                     for(int t=0;t<triggers.length;t++)
-                        doAbility(triggers[t],temp);
+                     hand[p].remove(i);
+                     doAbility(temp.getAbility()[0],temp);
                   }
          
          return true;
       }
+      JOptionPane.showMessageDialog(null,"You are not allowed to play that card.","Hold It!",JOptionPane.INFORMATION_MESSAGE);
       return false;
    }
-   private Card getTarget(String param)
+   private void setTarget(String param,String exe,Card card)
    {
-      return null;
+      if(param.contains("enemy")||param.contains("any"))
+      {
+         if(param.contains("land"))
+            able[0]=true;
+         else
+            able[0]=false;
+         if(param.contains("field"))
+            able[1]=true;
+         else
+            able[1]=false;
+         if(param.contains("block"))
+            able[2]=true;
+         else
+            able[2]=false;
+      }
+      if(param.contains("my")||param.contains("any"))
+      {
+         if(param.contains("land"))
+            able[5]=true;
+         else
+            able[5]=false;
+         if(param.contains("field"))
+            able[4]=true;
+         else
+            able[4]=false;
+         if(param.contains("block"))
+            able[3]=true;
+         else
+            able[3]=false;
+      }
+      holdExe=exe;
+      holdCard=card;
    }
    private void doAbility(String exe,Card card)
    {
@@ -237,18 +280,26 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       if(abi[0].equals("destroy"))
       {
-         Card target=getTarget(abi[1]);
-         target.hurt(target.getTough()+1);
-         allLoop:
-         for(int k=0;k<pNum;k++)
-            for(int i=0;i<field[p].size();i++)
-            {
-               if(field[p].get(i).getTough()<0)
+         if(target==null)
+         {
+            setTarget(abi[1],exe,card);
+         }
+         else
+         {
+            target.hurt(target.getTough()+1);
+            allLoop:
+            for(int k=0;k<pNum;k++)
+               for(int i=0;i<field[p].size();i++)
                {
-                  field[p].remove(i);
-                  break allLoop;  
+                  if(field[p].get(i).getTough()<0)
+                  {
+                     field[p].remove(i);
+                     break allLoop;  
+                  }
                }
-            }
+            holdExe=null;
+            holdCard=null;
+         }
       }
       if(abi[0].equals("onOtherEnter"))
       {
@@ -302,58 +353,6 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          }
       }
    }
-   /*
-   private void playMagic(Card aimed,ArrayList<Card> aimedList,int inx)
-   {
-      String effects[] = actMagic.getEffect().split("_");
-      for(int i=0;i<=effects.length/2;i++)
-      {
-         String tar=effects[i];
-         int plus=Integer.parseInt(effects[++i]);
-         if(tar.equals("draw"))
-         {
-            draw(plus,Integer.parseInt(JOptionPane.showInputDialog(null,"Choose target player number. (You are player "+(p+1)+")","Choose A Target",JOptionPane.PLAIN_MESSAGE))-1);
-         }
-         if(tar.equals("ping"))
-         {
-            life[Integer.parseInt(JOptionPane.showInputDialog(null,"Choose target player number. (You are player "+(p+1)+")","Choose A Target",JOptionPane.PLAIN_MESSAGE))-1]-=plus;
-         }
-         if(tar.equals("discard"))
-         {
-            if(plus<2)
-            {
-               dis[aimed.getOwner()].add(aimed);
-               aimedList.remove(inx);
-            }
-         }
-         if(tar.equals("atk"))
-         {
-            aimed.plusAtk(plus);
-         }
-         if(tar.equals("def"))
-         {
-            aimed.plusDef(plus);
-         }
-      }
-      input=null;
-      actMagic=null;
-   }
-   
-   
-   private void makeChantString()
-   {
-      for(int k=0;k<chantStr.length;k++)
-      {
-         chantStr[k]="";
-         for(int i=0;i<chants[k].size();i++)
-         {
-            chantStr[k]+="_"+chants[k].get(i).getTarget()+"_"+chants[k].get(i).getEffect();
-         }
-         if(chantStr[k].length()>0)
-            chantStr[k]=chantStr[k].substring(1);
-      }
-   }
-   */
    private void fight()
    {
       int nP=(p+1)%2;
@@ -495,7 +494,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       int nP=(p+1)%2;
       int x=e.getX();
       int y=e.getY();
-      if(input==null)
+      if(holdExe==null)//normal mode
       {
          if(pass.contains(x,y))//mode: 0=main1,1=atk,2=def,3=main2
          {
@@ -569,7 +568,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                Card card=hand[p].get(i);
                if(card.getRect().contains(x,y))
                {
-                  if(mode==0||mode==3)
+                  if(mode==0||mode==3||card.getType().equals("instant"))
                   {
                      int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to play this card?",card.getName(),JOptionPane.YES_NO_OPTION);
                      if(ans==JOptionPane.YES_OPTION)
@@ -708,6 +707,111 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             }
          }while(false);
       }
+      else//targeting mode
+      {
+         allLoop:
+         do
+         {
+            if(pass.contains(x,y))
+            {
+               holdExe=null;
+               holdCard=null;
+               for(int i=0;i<able.length;i++)
+               {
+                  able[i]=true;
+               }
+               break allLoop;
+            }
+            if(able[0])
+            for(int i=0;i<lands[nP].size();i++)
+            {
+               Card card=lands[nP].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+            if(able[1])
+            for(int i=0;i<field[nP].size();i++)
+            {
+               Card card=field[nP].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+            if(able[2])
+            for(int i=0;i<battle[nP].size();i++)
+            {
+               Card card=battle[nP].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+            if(able[3])
+            for(int i=0;i<battle[p].size();i++)
+            {
+               Card card=battle[p].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+            if(able[4])
+            for(int i=0;i<field[p].size();i++)
+            {
+               Card card=field[p].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+            if(able[5])
+            for(int i=0;i<lands[p].size();i++)
+            {
+               Card card=lands[p].get(i);
+               if(card.getRect().contains(x,y))
+               {
+                  int ans=JOptionPane.showConfirmDialog(null,card.toString()+"Do you want to target this card?",card.getName(),JOptionPane.YES_NO_OPTION);
+                  if(ans==JOptionPane.YES_OPTION)
+                  {
+                     target=card;
+                  }
+                  break allLoop;
+               }
+            }
+         }while(false);
+         if(target!=null)
+         {
+            doAbility(holdExe,holdCard);
+         }
+      }
       repaint();
    }
    private boolean attack(int index,int which)
@@ -730,49 +834,48 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
    public void paintComponent(Graphics g)
    {
       super.paintComponent(g); 
-      if(input==null)
+      int halfY=getHeight()/2;
+      pass=new Rect(getWidth()-40,halfY-20,getWidth(),halfY+20);
+      myDeck=new Rect(getWidth()-60,halfY+30,getWidth()-10,halfY+80);
+      myDis=new Rect(getWidth()-60,halfY+90,getWidth()-10,halfY+140);
+      yoDeck=new Rect(getWidth()-60,halfY-30,getWidth()-10,halfY-80);
+      yoDis=new Rect(getWidth()-60,halfY-90,getWidth()-10,halfY-140);
+      g.setColor(Color.gray);
+      g.fillRect(0, 0, getWidth(), getHeight());
+      g.setColor(Color.yellow);
+      g.drawLine(0, halfY,getWidth(),halfY);
+      double ref=0;
+      g.setFont(new Font("Ariel",Font.PLAIN,20));
+      for(int i=0;i<hand[p].size();i++)//draw hand
       {
-         int halfY=getHeight()/2;
-         pass=new Rect(getWidth()-40,halfY-20,getWidth(),halfY+20);
-         myDeck=new Rect(getWidth()-60,halfY+30,getWidth()-10,halfY+80);
-         myDis=new Rect(getWidth()-60,halfY+90,getWidth()-10,halfY+140);
-         yoDeck=new Rect(getWidth()-60,halfY-30,getWidth()-10,halfY-80);
-         yoDis=new Rect(getWidth()-60,halfY-90,getWidth()-10,halfY-140);
-         g.setColor(Color.gray);
-         g.fillRect(0, 0, getWidth(), getHeight());
-         g.setColor(Color.yellow);
-         g.drawLine(0, halfY,getWidth(),halfY);
-         double ref=0;
-         g.setFont(new Font("Ariel",Font.PLAIN,20));
-         for(int i=0;i<hand[p].size();i++)//draw hand
+         hand[p].get(i).setRect((int)(DIM*(ref+1)),getHeight()-DIM*2,(int)(DIM*(ref+2)),getHeight()-DIM);
+         ref+=1.5;
+         Rect temp = hand[p].get(i).getRect();
+         if(hideHand)
+            g.setColor(Color.red.darker());
+         else
+            g = setColor(g,hand[p].get(i));
+         if(hand[p].get(i).getType().equals("land")||hideHand)
          {
-            hand[p].get(i).setRect((int)(DIM*(ref+1)),getHeight()-DIM*2,(int)(DIM*(ref+2)),getHeight()-DIM);
-            ref+=1.5;
-            Rect temp = hand[p].get(i).getRect();
-            if(hideHand)
-               g.setColor(Color.red.darker());
-            else
-               g = setColor(g,hand[p].get(i));
-            if(hand[p].get(i).getType().equals("land")||hideHand)
-            {
-               g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-            }
-            else
-               if(hand[p].get(i).getType().equals("unit"))
-               {
-                  g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
-               }
-               else//chant & magic
-               {
-                  g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-               }
-            g = setTextColor(g);
-            if(!hideHand)
-               g.drawString(hand[p].get(i).getSumCost()+"",temp.getLeft()+10,temp.getBottom()-5);
+            g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
-         ref=0;
-         int dis=2;
-         g.setFont(new Font("Ariel",Font.PLAIN,25));
+         else
+            if(hand[p].get(i).getType().equals("unit"))
+            {
+               g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
+            }
+            else//chant & magic
+            {
+               g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
+            }
+         g = setTextColor(g);
+         if(!hideHand)
+            g.drawString(hand[p].get(i).getSumCost()+"",temp.getLeft()+10,temp.getBottom()-5);
+      }
+      ref=0;
+      int dis=2;
+      g.setFont(new Font("Ariel",Font.PLAIN,25));
+      if(able[4])
          for(int i=0;i<field[p].size();i++) //draw field
          {
             int xDim=0;
@@ -789,10 +892,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setTextColor(g);
             g.drawString("",temp.getLeft()+10,temp.getBottom()-5);
          }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
-         ref=0;
-         dis+=2;
+      g.setColor(Color.LIGHT_GRAY);
+      g.drawLine(DIM*4,(int)(halfY+DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY+DIM*(dis+1.5)));
+      ref=0;
+      dis+=2;
+      if(able[5])
          for(int i=0;i<lands[p].size();i++) //draw wells
          {
             int xDim=0;
@@ -807,7 +911,8 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setColor(g,lands[p].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
-         ref=0;
+      ref=0;
+      if(able[3])
          for(int i=0;i<battle[p].size();i++)
          {
             int xDim=0;
@@ -823,9 +928,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
          }
          
-         int nP=(p+1)%2;//nP is not-player number
-         dis=2;//y ref
-         ref=0;//x ref
+      int nP=(p+1)%2;//nP is not-player number
+      dis=2;//y ref
+      ref=0;//x ref
+      if(able[1])
          for(int i=0;i<field[nP].size();i++)
          {
             int xDim=0;
@@ -842,10 +948,11 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setTextColor(g);
             g.drawString("",temp.getLeft()+10,temp.getBottom()-5);
          }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
-         dis+=2;
-         ref=0;
+      g.setColor(Color.LIGHT_GRAY);
+      g.drawLine(DIM*4,(int)(halfY-DIM*(dis+1.5)),(int)(getWidth()-DIM*5.5),(int)(halfY-DIM*(dis+1.5)));
+      dis+=2;
+      ref=0;
+      if(able[0])
          for(int i=0;i<lands[nP].size();i++)
          {
             int xDim=0;
@@ -860,41 +967,42 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g = setColor(g,lands[nP].get(i));
             g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
          }
-         ref=0;
-         for(int i=0;i<hand[nP].size();i++)
-         {
-            hand[nP].get(i).setRect((int)(DIM*(ref+1)),DIM,(int)(DIM*(ref+2)),DIM*2);
-            ref+=1.5;
-            Rect temp = hand[nP].get(i).getRect();
+      ref=0;
+      for(int i=0;i<hand[nP].size();i++)
+      {
+         hand[nP].get(i).setRect((int)(DIM*(ref+1)),DIM,(int)(DIM*(ref+2)),DIM*2);
+         ref+=1.5;
+         Rect temp = hand[nP].get(i).getRect();
             //g.setColor(new Color(u.ranI(0,255),u.ranI(0,255),u.ranI(0,255)));
-            g.setColor(Color.red.darker());
-            g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-         }
-         ref=1;
-         for(int i=0;i<chants[p].size();i++)
-         {
-            chants[p].get(i).setRect(getWidth()-DIM*5,(int)(halfY+DIM*(ref)),getWidth()-DIM*4,(int)(halfY+DIM*(ref+1)));
-            ref+=1.5;
-            Rect temp = chants[p].get(i).getRect();
-            g = setColor(g,chants[p].get(i));
-            g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-         }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine((int)(getWidth()-DIM*5.5),halfY+DIM,(int)(getWidth()-DIM*5.5),halfY+DIM*(dis+1));
-         g.drawLine((int)(getWidth()-DIM*3.5),halfY+DIM,(int)(getWidth()-DIM*3.5),halfY+DIM*(dis+1));
-         ref=1;
-         for(int i=0;i<chants[nP].size();i++)
-         {
-            chants[nP].get(i).setRect(getWidth()-DIM*5,(int)(halfY-DIM*(ref)),getWidth()-DIM*4,(int)(halfY-DIM*(ref+1)));
-            ref+=1.5;
-            Rect temp = chants[nP].get(i).getRect();
-            g = setColor(g,chants[nP].get(i));
-            g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
-         }
-         g.setColor(Color.LIGHT_GRAY);
-         g.drawLine((int)(getWidth()-DIM*5.5),halfY-DIM,(int)(getWidth()-DIM*5.5),halfY-DIM*(dis+1));
-         g.drawLine((int)(getWidth()-DIM*3.5),halfY-DIM,(int)(getWidth()-DIM*3.5),halfY-DIM*(dis+1));
-         ref=0;
+         g.setColor(Color.red.darker());
+         g.fillRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
+      }
+      ref=1;
+      for(int i=0;i<chants[p].size();i++)
+      {
+         chants[p].get(i).setRect(getWidth()-DIM*5,(int)(halfY+DIM*(ref)),getWidth()-DIM*4,(int)(halfY+DIM*(ref+1)));
+         ref+=1.5;
+         Rect temp = chants[p].get(i).getRect();
+         g = setColor(g,chants[p].get(i));
+         g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
+      }
+      g.setColor(Color.LIGHT_GRAY);
+      g.drawLine((int)(getWidth()-DIM*5.5),halfY+DIM,(int)(getWidth()-DIM*5.5),halfY+DIM*(dis+1));
+      g.drawLine((int)(getWidth()-DIM*3.5),halfY+DIM,(int)(getWidth()-DIM*3.5),halfY+DIM*(dis+1));
+      ref=1;
+      for(int i=0;i<chants[nP].size();i++)
+      {
+         chants[nP].get(i).setRect(getWidth()-DIM*5,(int)(halfY-DIM*(ref)),getWidth()-DIM*4,(int)(halfY-DIM*(ref+1)));
+         ref+=1.5;
+         Rect temp = chants[nP].get(i).getRect();
+         g = setColor(g,chants[nP].get(i));
+         g.fillOval(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight());
+      }
+      g.setColor(Color.LIGHT_GRAY);
+      g.drawLine((int)(getWidth()-DIM*5.5),halfY-DIM,(int)(getWidth()-DIM*5.5),halfY-DIM*(dis+1));
+      g.drawLine((int)(getWidth()-DIM*3.5),halfY-DIM,(int)(getWidth()-DIM*3.5),halfY-DIM*(dis+1));
+      ref=0;
+      if(able[2])
          for(int i=0;i<battle[nP].size();i++)
          {
             int xDim=0;
@@ -910,59 +1018,60 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             g.fillRoundRect(temp.getLeft(),temp.getTop(),temp.getWidth(),temp.getHeight(),DIM/2,DIM/2);
          }
          
-         g.setFont(new Font("Arial",Font.PLAIN,15));
-         g.setColor(Color.white);
-         g.drawString(mana[p][0]+"",DIM,halfY+25);
-         g.setColor(Color.blue);
-         g.drawString(mana[p][1]+"",DIM,halfY+45);
-         g.setColor(Color.green);
-         g.drawString(mana[p][2]+"",DIM,halfY+65);
-         g.setColor(Color.red);
-         g.drawString(mana[p][3]+"",DIM,halfY+85);
-         g.setColor(Color.black);
-         g.drawString(mana[p][4]+"",DIM,halfY+105);
-         g.setColor(Color.lightGray);
-         g.drawString(mana[p][5]+"",DIM,halfY+125);
+      g.setFont(new Font("Arial",Font.PLAIN,15));
+      g.setColor(Color.white);
+      g.drawString(mana[p][0]+"",DIM,halfY+25);
+      g.setColor(Color.blue);
+      g.drawString(mana[p][1]+"",DIM,halfY+45);
+      g.setColor(Color.green);
+      g.drawString(mana[p][2]+"",DIM,halfY+65);
+      g.setColor(Color.red);
+      g.drawString(mana[p][3]+"",DIM,halfY+85);
+      g.setColor(Color.black);
+      g.drawString(mana[p][4]+"",DIM,halfY+105);
+      g.setColor(Color.lightGray);
+      g.drawString(mana[p][5]+"",DIM,halfY+125);
       
-         g.setColor(Color.yellow);
-         g.drawString(p+1+" | "+pNum,DIM,halfY+145);
-         g.fillRect(pass.getLeft(),pass.getTop(),pass.getWidth(),pass.getHeight());
+      g.setColor(Color.yellow);
+      g.drawString(p+1+" | "+pNum,DIM,halfY+145);
+      g.fillRect(pass.getLeft(),pass.getTop(),pass.getWidth(),pass.getHeight());
          
-         g.setColor(Color.red.darker());
-         g.fillRect(myDeck.getLeft(),myDeck.getTop(),myDeck.getWidth(),myDeck.getHeight());
-         g.setColor(Color.white.darker());
-         g.fillRect(myDis.getLeft(),myDis.getTop(),myDis.getWidth(),myDis.getHeight());
-         g.setColor(Color.yellow);
-         g.setFont(new Font("Dialog",Font.PLAIN,30));
-         g.drawString(life[p]+"",myDis.getLeft(),myDis.getTop()+myDis.getHeight()+DIM);
+      g.setColor(Color.red.darker());
+      g.fillRect(myDeck.getLeft(),myDeck.getTop(),myDeck.getWidth(),myDeck.getHeight());
+      g.setColor(Color.white.darker());
+      g.fillRect(myDis.getLeft(),myDis.getTop(),myDis.getWidth(),myDis.getHeight());
+      g.setColor(Color.yellow);
+      g.setFont(new Font("Dialog",Font.PLAIN,30));
+      g.drawString(life[p]+"",myDis.getLeft(),myDis.getTop()+myDis.getHeight()+DIM);
          
-         g.setColor(Color.red.darker());
-         g.fillRect(yoDeck.getLeft(),yoDeck.getTop(),yoDeck.getWidth(),yoDeck.getHeight());
-         g.setColor(Color.white.darker());
-         g.fillRect(yoDis.getLeft(),yoDis.getTop(),yoDis.getWidth(),yoDis.getHeight());
-         g.setColor(Color.yellow);
-         g.setFont(new Font("Dialog",Font.PLAIN,30));
-         g.drawString(life[nP]+"",yoDis.getLeft(),yoDis.getTop()+yoDis.getHeight()-DIM/5);
+      g.setColor(Color.red.darker());
+      g.fillRect(yoDeck.getLeft(),yoDeck.getTop(),yoDeck.getWidth(),yoDeck.getHeight());
+      g.setColor(Color.white.darker());
+      g.fillRect(yoDis.getLeft(),yoDis.getTop(),yoDis.getWidth(),yoDis.getHeight());
+      g.setColor(Color.yellow);
+      g.setFont(new Font("Dialog",Font.PLAIN,30));
+      g.drawString(life[nP]+"",yoDis.getLeft(),yoDis.getTop()+yoDis.getHeight()-DIM/5);
          
-         String modeStr="ERROR";
-         switch(mode)
-         {
-            case 0:
+      String modeStr="ERROR";
+      switch(mode)
+      {
+         case 0:
             case 3:
-               modeStr="Main";
-               break;
-            case 1:
-               modeStr="Attack";
-               break;
-            case 2:
-               modeStr="Defend";
-               break;
-            default:
-               break;
-         }
-         g.setFont(new Font("Dialog",Font.PLAIN,20));
-         g.drawString(modeStr,getWidth()-70,getHeight()-10);
+            modeStr="Main";
+            break;
+         case 1:
+            modeStr="Attack";
+            break;
+         case 2:
+            modeStr="Defend";
+            break;
+         default:
+            break;
       }
+      if(holdExe!=null)
+         modeStr="Target";
+      g.setFont(new Font("Dialog",Font.PLAIN,20));
+      g.drawString(modeStr,getWidth()-70,getHeight()-10);
    }
    private Graphics setColor(Graphics g,Card card)
    {

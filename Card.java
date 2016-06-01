@@ -287,7 +287,23 @@ public class Card
          }
          if(exp[0].equals("destroy"))
          {
-            ans+="Destroy "+exp[1]+" "+exp[2]+" creature.\n";
+            String res;
+            switch(exp[1])
+            {
+               case "atk-def":
+                  res=" attacking or blocking ";
+                  break;
+               case "atk":
+                  res=" attacking ";
+                  break;
+               case "def":
+                  res=" blocking ";
+                  break;
+               default:
+                  res=" ";
+                  break;
+            }
+            ans+="Destroy target"+res+"creature.\n";
          }
       }
       for(int i=0;i<trigger.length;i++)

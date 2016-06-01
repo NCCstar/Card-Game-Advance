@@ -16,5 +16,5 @@
 0
 5 Staff of the Sun Magus 0 enchant 0 0 0 0 0 3 0 0 1 onWhiteEnter_lifeAdd_1 0 0
 0
-2 Divine Verdict 1 w instant 1 0 0 0 0 3 0 1 destroy_atk-def 0 0 0
+2 Divine Verdict 1 w instant 1 0 0 0 0 3 0 1 destroy_any-block 0 0 0
 5
