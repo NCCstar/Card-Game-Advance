@@ -6,3 +6,8 @@ Abilities:
 Name_tap?_datafields
 manaAdd_true_[colorToAdd]_[amountToAdd]
 lifeAdd_true_[amountToAdd]
+
+Triggers:
+
+for Instant/sorcery
+onEnter_[affect]_['target'||'affect']_restrictions

@@ -93,6 +93,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       draw(7,0);
       draw(7,1); 
+      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      field[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       //add mulligan
    }
    private boolean play(int i)
@@ -180,7 +184,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          {
             lands[p].add(temp);
             //------------------------------------------------------------------------------------------------------------------------------------------------
-            landPlayed[p]=false;//----------------------------------------------------------------------------------------------------------------------------
+            landPlayed[p]=true;//----------------------------------------------------------------------------------------------------------------------------
             //------------------------------------------------------------------------------------------------------------------------------------------------
             hand[p].remove(i);
          }
@@ -202,10 +206,21 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   chants[p].add(temp);
                   hand[p].remove(i);
                }
+               else
+                  if(temp.getType().equals("instant"))
+                  {
+                     String[] triggers=temp.getTrigger();
+                     for(int t=0;t<triggers.length;t++)
+                        doAbility(triggers[t],temp);
+                  }
          
          return true;
       }
       return false;
+   }
+   private Card getTarget(String param)
+   {
+      return null;
    }
    private void doAbility(String exe,Card card)
    {
@@ -219,6 +234,21 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       {
          life[p]+=Integer.parseInt(abi[2]);
          card.tap();
+      }
+      if(abi[0].equals("destroy"))
+      {
+         Card target=getTarget(abi[1]);
+         target.hurt(target.getTough()+1);
+         allLoop:
+         for(int k=0;k<pNum;k++)
+            for(int i=0;i<field[p].size();i++)
+            {
+               if(field[p].get(i).getTough()<0)
+               {
+                  field[p].remove(i);
+                  break allLoop;  
+               }
+            }
       }
       if(abi[0].equals("onOtherEnter"))
       {

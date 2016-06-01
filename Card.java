@@ -285,6 +285,10 @@ public class Card
             ans+=exp[2];
             ans+=" life.\n";
          }
+         if(exp[0].equals("destroy"))
+         {
+            ans+="Destroy "+exp[1]+" "+exp[2]+" creature.\n";
+         }
       }
       for(int i=0;i<trigger.length;i++)
       {
@@ -299,7 +303,8 @@ public class Card
          }
          if(exp[0].equals("onEnter"))
          {
-            ans+="When this unit enters the battlefield ";
+            if(!type.equals("instant")&&!type.equals("sorcery"))
+               ans+="When this unit enters the battlefield ";
          }
          if(exp[0].equals("onWhiteEnter"))
          {
