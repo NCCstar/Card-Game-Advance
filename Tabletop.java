@@ -1,7 +1,7 @@
 /*
-To Do Short: enchants, artifacts
+To Do Short: 
 
-TO DO Long: Spells: Instant/Sorcery
+TO DO Long: 
 
 Bugs:
 */
