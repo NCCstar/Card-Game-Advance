@@ -100,6 +100,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       }
       draw(7,0);
       draw(7,1); 
+      //*
       lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       lands[0].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
@@ -109,6 +110,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
       lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
       lands[1].add(new Card("1 Plains 1 w land 0 0 0 0 0 0 0 1 manaAdd_true_0_1 0 0 0"));
+      //*/
       //add mulligan
    }
    private boolean play(int i)
@@ -195,9 +197,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
          if(temp.getType().equals("land"))
          {
             lands[p].add(temp);
-            //------------------------------------------------------------------------------------------------------------------------------------------------
-            landPlayed[p]=true;//----------------------------------------------------------------------------------------------------------------------------
-            //------------------------------------------------------------------------------------------------------------------------------------------------
+            landPlayed[p]=true;
             hand[p].remove(i);
          }
          else
@@ -219,7 +219,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
                   hand[p].remove(i);
                }
                else
-                  if(temp.getType().equals("instant"))
+                  if(temp.getType().equals("instant")||temp.getType().equals("sorcery"))
                   {
                      hand[p].remove(i);
                      doAbility(temp.getAbility()[0],temp);
@@ -242,7 +242,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             able[1]=true;
          else
             able[1]=false;
-         if(param.contains("block"))
+         if(param.contains("fight"))
             able[2]=true;
          else
             able[2]=false;
@@ -257,7 +257,7 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             able[4]=true;
          else
             able[4]=false;
-         if(param.contains("block"))
+         if(param.contains("fight"))
             able[3]=true;
          else
             able[3]=false;
@@ -300,6 +300,10 @@ public class Tabletop extends JPanel implements MouseListener, MouseMotionListen
             holdExe=null;
             holdCard=null;
          }
+      }
+      if(abi[0].equals("tap"))
+      {
+         
       }
       if(abi[0].equals("onOtherEnter"))
       {

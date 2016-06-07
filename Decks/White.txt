@@ -17,4 +17,6 @@
 5 Staff of the Sun Magus 0 enchant 0 0 0 0 0 3 0 0 1 onWhiteEnter_lifeAdd_1 0 0
 0
 2 Divine Verdict 1 w instant 1 0 0 0 0 3 0 1 destroy_any-fight 0 0 0
+3
+1 Wearriness 1 b sorcery 0 0 0 0 0 0 0 1 tap_any-field 0 0 0
 5

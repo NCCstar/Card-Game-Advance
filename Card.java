@@ -285,25 +285,40 @@ public class Card
             ans+=exp[2];
             ans+=" life.\n";
          }
-         if(exp[0].equals("destroy"))
+         if(type.equals("instant")||type.equals("sorcery"))
          {
-            String res;
-            switch(exp[1])
+            String res="";
+            if(exp[1].contains("any"))
             {
-               case "atk-def":
-                  res=" attacking or blocking ";
-                  break;
-               case "atk":
-                  res=" attacking ";
-                  break;
-               case "def":
-                  res=" blocking ";
-                  break;
-               default:
-                  res=" ";
-                  break;
+               if(exp[1].contains("field"))
+                  res=" creature ";
+               if(exp[1].contains("fight"))
+                  res=" attacking or blocking creature ";
             }
+            else
+               if(exp[1].contains("enemy"))
+               {
+                  if(exp[1].contains("field"))
+                     res=" enemy creature ";
+                  if(exp[1].contains("fight"))
+                     res=" enemy attacking or blocking creature ";
+               }
+               else
+                  if(exp[1].contains("my"))
+                  {
+                     if(exp[1].contains("field"))
+                        res=" friendly creature ";
+                     if(exp[1].contains("fight"))
+                        res=" friendly attacking or blocking creature ";
+                  } 
+            if(exp[0].equals("destroy"))
+            {        
             ans+="Destroy target"+res+"creature.\n";
+            }
+            if(exp[0].equals("tap"))
+            {
+            ans+="Tap target"+res+"creature.\n";
+            }
          }
       }
       for(int i=0;i<trigger.length;i++)
