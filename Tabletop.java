@@ -1,20 +1,17 @@
 /*
 To Do Short: 
-
+prepare supertypes, make lands, make creatures
 TO DO Long: 
-
+add other types: instant-sorcery-enchantment,
 Bugs:
+
 */
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
+
 public class Tabletop extends JPanel implements MouseListener, MouseMotionListener
 {
    private int pNum;
